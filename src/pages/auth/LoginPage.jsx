@@ -78,7 +78,7 @@ export const LoginPage = () => {
                   autoComplete="username"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  placeholder="e.g. hema@2026"
+                  placeholder="Enter your username"
                   className="w-full pl-10 pr-4 py-2.5 text-sm border border-slate-200/90 rounded-xl bg-slate-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-slate-900/10 focus:border-slate-400 transition-all text-slate-800 placeholder-slate-400"
                 />
               </div>
