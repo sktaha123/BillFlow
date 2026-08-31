@@ -10,6 +10,8 @@ export default defineConfig({
       '@': `${import.meta.dirname}/src`,
     },
   },
+  // Expose both VITE_ and standard Vercel/Supabase environment variables
+  envPrefix: ['VITE_', 'SUPABASE_', 'NEXT_PUBLIC_SUPABASE_'],
   server: {
     // Ensure all routes fallback to index.html — fixes "new tab" navigation in SPA
     historyApiFallback: true,
