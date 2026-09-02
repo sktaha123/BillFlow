@@ -197,7 +197,7 @@ export const OfficialBillDocument = React.forwardRef(({
           textAlign: 'center',
           padding: '4px 8px',
           fontWeight: 'bold',
-          letterSpacing: '0.12em',
+          letterSpacing: '',
           fontSize: '11px',
           lineHeight: '1.3',
           color: '#000000',

@@ -8,6 +8,7 @@ export const Step1Semester = ({
   setDraft,
   academicYears,
   semesters,
+  classes = [],
   onNext,
   onCancel,
 }) => {
@@ -25,7 +26,16 @@ export const Step1Semester = ({
     setDraft((prev) => ({
       ...prev,
       academic_year_id: e.target.value,
-      academic_year_label: selectedYear?.year_label || '2026–27',
+      academic_year_label: selectedYear?.year_label,
+    }));
+  };
+
+  const handleClassChange = (e) => {
+    const selectedClass = classes.find((c) => c.id === e.target.value);
+    setDraft((prev) => ({
+      ...prev,
+      class_id: e.target.value,
+      class_name: selectedClass?.name || '',
     }));
   };
 
@@ -38,7 +48,7 @@ export const Step1Semester = ({
           Select Examination Period
         </h2>
         <p className="text-xs sm:text-sm text-slate-500 leading-relaxed">
-          Choose the academic year and semester for this paper-setting remuneration bill.
+          Choose the academic year, class, and semester for this paper-setting remuneration bill.
         </p>
       </div>
 
@@ -55,6 +65,21 @@ export const Step1Semester = ({
             options={academicYears.map((ay) => ({
               value: ay.id,
               label: ay.year_label + (ay.is_current ? ' (Current Academic Year)' : ''),
+            }))}
+          />
+        </div>
+
+        {/* Class Selector (Below Academic Year) */}
+        <div className="space-y-2">
+          <label className="block text-xs font-semibold uppercase tracking-wide text-slate-700">
+            Class
+          </label>
+          <Select
+            value={draft.class_id}
+            onChange={handleClassChange}
+            options={classes.map((c) => ({
+              value: c.id,
+              label: `${c.name} (${c.department})`,
             }))}
           />
         </div>
@@ -81,7 +106,7 @@ export const Step1Semester = ({
                 >
                   <span className="text-base font-semibold">{sem.roman_label}</span>
                   <span className={clsx('text-[10px] mt-0.5', isSelected ? 'text-slate-300' : 'text-slate-400')}>
-                    Sem {sem.semester_number}
+                    Sem
                   </span>
                 </button>
               );
@@ -91,7 +116,7 @@ export const Step1Semester = ({
           {draft.semester_label && (
             <div className="mt-3 p-3.5 bg-slate-50 border border-slate-200/70 rounded-xl text-xs text-slate-600 flex items-center gap-2">
               <Calendar className="w-4 h-4 text-slate-400 shrink-0" />
-              <span>Selected: <strong className="text-slate-900 font-semibold">Semester {draft.semester_label}</strong> ({draft.session_type || 'Winter / Summer Session'})</span>
+              <span>Selected: <strong className="text-slate-900 font-semibold">Semester {draft.semester_label}</strong></span>
             </div>
           )}
         </div>

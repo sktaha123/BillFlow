@@ -124,10 +124,8 @@ export const LoginPage = () => {
 
         </div>
 
-        {/* Footer */}
-        <p className="text-center text-xs text-slate-400 mt-8 font-normal">
-          B.K. Birla College of Arts, Science &amp; Commerce (Autonomous), Kalyan
-        </p>
+       
+        
       </div>
     </div>
   );

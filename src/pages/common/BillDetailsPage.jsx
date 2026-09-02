@@ -46,7 +46,7 @@ export const BillDetailsPage = () => {
 
   return (
     <div className="space-y-8 max-w-4xl mx-auto animate-in fade-in duration-200">
-      
+
       {/* Top Header Navigation */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <button
@@ -70,9 +70,7 @@ export const BillDetailsPage = () => {
       <div className="bg-white/90 backdrop-blur-md border border-slate-200/80 rounded-xl p-6 sm:p-7 space-y-5 shadow-[0_4px_24px_-4px_rgba(15,23,42,0.04)]">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-5 border-b border-slate-100">
           <div>
-            <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">
-              Examination Paper Setting Bill
-            </span>
+            
             <h1 className="text-2xl sm:text-3xl font-semibold font-mono text-slate-900 mt-1">{bill.bill_reference_id}</h1>
           </div>
 
@@ -95,7 +93,7 @@ export const BillDetailsPage = () => {
           </div>
           <div className="bg-slate-50/70 p-3.5 rounded-xl border border-slate-200/60">
             <span className="text-slate-400 block text-[10px] uppercase font-semibold">Class &amp; Semester</span>
-            <span className="font-semibold text-slate-900 text-sm mt-0.5 block">{bill.class?.name || 'TYCS'} • Sem {bill.semester?.roman_label}</span>
+            <span className="font-semibold text-slate-900 text-sm mt-0.5 block">{bill.class?.name || 'TYCS'} , Sem {bill.semester?.roman_label}</span>
           </div>
           <div className="bg-slate-50/70 p-3.5 rounded-xl border border-slate-200/60">
             <span className="text-slate-400 block text-[10px] uppercase font-semibold">Academic Year</span>
@@ -150,25 +148,21 @@ export const BillDetailsPage = () => {
       {/* Financial Total */}
       <div className="bg-white/90 backdrop-blur-md border border-slate-200/80 rounded-xl p-6 space-y-2 shadow-2xs">
         <div className="flex justify-between items-center text-sm font-semibold text-slate-900">
-          <span className="uppercase tracking-wide">Grand Total Remuneration</span>
-          <span className="font-mono text-2xl font-bold">{formatCurrency(bill.grand_total)}</span>
+          <span className="uppercase tracking-wide">Total Amount</span>
+          <span className="font-mono text-xl font-bold">{formatCurrency(bill.grand_total)}</span>
         </div>
-        {bill.amount_in_words && (
-          <p className="text-xs text-slate-500 italic pt-1 border-t border-slate-100">
-            In Words: <strong className="text-slate-800 font-semibold">{bill.amount_in_words}</strong>
-          </p>
-        )}
+
       </div>
 
       {/* Approval Audit Trail */}
-      <div className="bg-white/90 backdrop-blur-md border border-slate-200/80 rounded-xl p-6 sm:p-7 space-y-4 shadow-2xs">
-        <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-400">
-          Workflow Audit History &amp; Snapshots
+      <div className="space-y-3">
+        <h3 className="text-base font-semibold text-slate-900 tracking-tight">
+          Bill History
         </h3>
-        
+
         <div className="space-y-3 text-xs">
           {bill.approvals?.map((app, idx) => (
-            <div key={app.id || idx} className="flex items-start gap-3.5 p-4 rounded-xl bg-slate-50/70 border border-slate-200/60">
+            <div key={app.id || idx} className="flex items-start gap-3.5 p-4 rounded-xl bg-white border border-slate-200/60">
               <div className="mt-0.5">
                 {app.action === 'SUBMITTED' && <CheckCircle2 className="w-4 h-4 text-slate-800" />}
                 {app.action === 'APPROVED' && <CheckCircle2 className="w-4 h-4 text-indigo-600" />}
@@ -177,20 +171,23 @@ export const BillDetailsPage = () => {
               </div>
 
               <div className="flex-1 space-y-1">
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between gap-2">
                   <span className="font-semibold text-slate-900">
-                    {app.action === 'SUBMITTED' && 'Submitted by Faculty'}
+                    {app.action === 'SUBMITTED' && `Submitted by ${app.user_name || app.user?.name || app.role}`}
                     {app.action === 'APPROVED' && 'Endorsed by HOD'}
                     {app.action === 'FINALIZED' && 'Sanctioned by Principal'}
                     {app.action === 'REJECTED' && `Rejected by ${app.role}`}
                   </span>
-                  <span className="text-[11px] text-slate-400 font-mono">
+                  <span className="hidden sm:inline-block text-[12px] text-slate-700 font-mono shrink-0">
                     {new Date(app.created_at).toLocaleString()}
                   </span>
                 </div>
 
                 {app.comment && <p className="text-slate-600 text-xs">{app.comment}</p>}
-                <p className="text-[11px] text-slate-400 font-mono">By: {app.user_name || app.user?.name || app.role}</p>
+
+                <p className="sm:hidden text-[11px] text-slate-400 font-mono">
+                  {new Date(app.created_at).toLocaleString()}
+                </p>
 
                 {app.signature_snapshot_path && (
                   <div className="mt-2.5 pt-2.5 border-t border-slate-200/60 flex items-center gap-3">
@@ -198,7 +195,7 @@ export const BillDetailsPage = () => {
                     <img
                       src={app.signature_snapshot_path}
                       alt="Signature Snapshot"
-                      className="h-8 max-w-[120px] object-contain filter contrast-125 bg-white p-1 border border-slate-200 rounded-lg"
+                      className="h-20 max-w-[120px] object-contain filter contrast-125 bg-white p-1 border border-slate-200 rounded-lg"
                     />
                   </div>
                 )}

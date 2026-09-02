@@ -119,13 +119,8 @@ export const Step3PaperDetails = ({
 
         {/* COST SUMMARY BREAKDOWN BOX */}
         <div className="border border-slate-200/90 rounded-xl p-4 sm:p-5 bg-slate-50/70 space-y-3">
-          <div className="flex items-center justify-between pb-2 border-b border-slate-200/70">
-            <span className="text-xs font-semibold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
-              <Calculator className="w-3.5 h-3.5 text-slate-900" />
-              Calculated Breakdown
-            </span>
-            <span className="text-[10px] text-slate-400 font-mono">Auto Calculated</span>
-          </div>
+          
+          
 
           <div className="space-y-2 text-xs">
             <div className="flex justify-between text-slate-600">

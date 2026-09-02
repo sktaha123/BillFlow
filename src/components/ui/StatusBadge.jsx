@@ -54,12 +54,12 @@ export const StatusBadge = ({ status, className }) => {
   return (
     <span
       className={clsx(
-        'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border',
+        'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-medium border',
         config.styles,
         className
       )}
     >
-      <span className={clsx('w-1.5 h-1.5 rounded-full shrink-0', config.dot)} />
+      
       <span>{config.label}</span>
     </span>
   );

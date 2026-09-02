@@ -65,7 +65,11 @@ export const SEED_PROFILES = [
 
 export const SEED_ACADEMIC_YEARS = [
   { id: 'ay-2026-27', year_label: '2026–27', is_current: true },
-  { id: 'ay-2025-26', year_label: '2025–26', is_current: false }
+  { id: 'ay-2025-26', year_label: '2025–26', is_current: false },
+  { id: 'ay-2024-25', year_label: '2024–25', is_current: false },
+  { id: 'ay-2023-24', year_label: '2023–24', is_current: false },
+  { id: 'ay-2022-23', year_label: '2022–23', is_current: false },
+  { id: 'ay-2021-22', year_label: '2021–22', is_current: false }
 ];
 
 export const SEED_SEMESTERS = [
@@ -185,7 +189,7 @@ class DataService {
   // ── Academic Reference ──
   async getAcademicYears() {
     if (isSupabaseConfigured && supabase) {
-      const { data } = await supabase.from('academic_years').select('*').order('created_at');
+      const { data } = await supabase.from('academic_years').select('*').order('year_label', { ascending: false });
       if (data && data.length > 0) return data;
     }
     return SEED_ACADEMIC_YEARS;

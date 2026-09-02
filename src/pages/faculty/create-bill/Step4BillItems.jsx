@@ -103,15 +103,7 @@ export const Step4BillItems = ({
 
       {/* Category Totals & Grand Total Summary Box */}
       <div className="bg-white/85 backdrop-blur-md border border-slate-200/80 rounded-xl p-6 sm:p-7 space-y-5 shadow-2xs">
-        <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-          <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-700 flex items-center gap-2">
-            <Layers className="w-4 h-4 text-slate-900" />
-            Remuneration Category Breakdown
-          </h3>
-          <span className="text-xs text-slate-400 font-mono">
-            {draft.items.length} {draft.items.length === 1 ? 'Paper Course' : 'Paper Courses'}
-          </span>
-        </div>
+        
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
           <div className="bg-slate-50/80 p-4 rounded-xl border border-slate-200/60">

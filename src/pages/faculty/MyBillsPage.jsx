@@ -69,7 +69,7 @@ export const MyBillsPage = () => {
       {/* Header - Clean title without top badge */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="space-y-1">
-          <h1 className="text-3xl font-semibold text-slate-900 tracking-tight">My Examination Bills</h1>
+          <h1 className="text-3xl font-normal text-slate-900 tracking-tight">My  Bills</h1>
           <p className="text-xs sm:text-sm text-slate-500">
             View, track, and print all your semester paper-setting remuneration claims.
           </p>
@@ -183,9 +183,15 @@ export const MyBillsPage = () => {
               </thead>
               <tbody className="divide-y divide-slate-100">
                 {filteredBills.map((bill) => (
-                  <tr key={bill.id} className="hover:bg-slate-50/60 transition-colors">
+                  <tr
+                    key={bill.id}
+                    onClick={() => navigate(`/bill/${bill.id}`)}
+                    className="hover:bg-slate-50/70 transition-colors cursor-pointer group"
+                  >
                     <td className="py-3.5 px-4">
-                      <span className="font-mono font-semibold text-slate-900 block">{bill.bill_reference_id}</span>
+                      <span className="font-mono font-semibold text-slate-900 block group-hover:text-indigo-600 transition-colors">
+                        {bill.bill_reference_id}
+                      </span>
                       <span className="text-[11px] text-slate-400 block">{bill.class?.name || 'TYCS'}</span>
                     </td>
                     <td className="py-3.5 px-4 font-medium text-slate-800">
@@ -195,8 +201,8 @@ export const MyBillsPage = () => {
                     <td className="py-3.5 px-4 text-slate-600">
                       {bill.items?.length || 0} {bill.items?.length === 1 ? 'Paper' : 'Papers'}
                     </td>
-                    <td className="py-3.5 px-4 text-slate-400">
-                      {bill.submission_date ? new Date(bill.submission_date).toLocaleDateString() : '—'}
+                    <td className="py-3.5 px-4 text-slate-500 font-mono text-[11px]">
+                      {bill.submission_date ? new Date(bill.submission_date).toLocaleDateString('en-IN') : 'Draft'}
                     </td>
                     <td className="py-3.5 px-4">
                       <StatusBadge status={bill.status} />
@@ -206,11 +212,14 @@ export const MyBillsPage = () => {
                     </td>
                     <td className="py-3.5 px-4 text-right">
                       <button
-                        onClick={() => navigate(`/bill/${bill.id}`)}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 shadow-2xs transition-all cursor-pointer"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          navigate(`/bill/${bill.id}`);
+                        }}
+                        className="group inline-flex items-center gap-1.5 text-xs font-medium text-slate-500 hover:text-slate-900 transition-colors cursor-pointer"
                       >
-                        <Eye className="w-3.5 h-3.5 text-slate-400" />
-                        View
+                        <Eye className="w-3.5 h-3.5 text-slate-400 group-hover:text-slate-900 transition-colors" />
+                        <span className="text-slate-500 group-hover:text-slate-900 transition-colors">View</span>
                       </button>
                     </td>
                   </tr>

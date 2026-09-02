@@ -27,7 +27,7 @@ export const StepIndicator = ({ currentStep }) => {
               {/* Step circle node */}
               <div
                 className={clsx(
-                  'w-8 h-8 rounded-xl flex items-center justify-center text-xs font-semibold transition-all duration-200',
+                  'w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold transition-all duration-200',
                   isCompleted
                     ? 'bg-slate-900 text-white shadow-xs'
                     : isCurrent

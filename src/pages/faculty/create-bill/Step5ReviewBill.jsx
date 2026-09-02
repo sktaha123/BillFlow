@@ -37,9 +37,7 @@ export const Step5ReviewBill = ({
 
       {/* 1. Bill Information Block */}
       <div className="bg-white/90 backdrop-blur-md border border-slate-200/80 rounded-xl p-6 space-y-4 shadow-2xs">
-        <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-400">
-          Faculty &amp; Period Details
-        </h3>
+        
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
           <div className="p-3 bg-slate-50/70 rounded-xl border border-slate-200/60">
             <span className="text-slate-400 block text-[10px] uppercase font-semibold">Faculty Name</span>
@@ -81,7 +79,7 @@ export const Step5ReviewBill = ({
               <div>
                 <p className="font-semibold text-slate-900 text-sm">{it.subject?.name || it.subject_name}</p>
                 <p className="text-[11px] text-slate-500 mt-0.5">
-                  {it.paper_type} • {it.paper_sets} Sets
+                  {it.paper_type} &nbsp; {it.paper_sets} Sets
                   {it.translation_sets > 0 ? ` • ${it.translation_sets} Translation` : ''}
                   {it.proof_papers > 0 ? ` • ${it.proof_papers} Proof` : ''}
                 </p>
@@ -94,9 +92,7 @@ export const Step5ReviewBill = ({
 
       {/* 3. Cost Breakdown & Amount in Words */}
       <div className="bg-white/90 backdrop-blur-md border border-slate-200/80 rounded-xl p-6 space-y-4 shadow-2xs">
-        <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-400">
-          Remuneration Calculation Summary
-        </h3>
+        
         <div className="space-y-2 text-xs text-slate-600">
           <div className="flex justify-between py-1 border-b border-slate-100">
             <span>Paper Setting Total</span>
@@ -116,10 +112,7 @@ export const Step5ReviewBill = ({
             <span className="font-mono text-xl font-bold">{formatCurrency(grandTotal)}</span>
           </div>
 
-          <div className="pt-2 text-[11px] bg-slate-50 p-3.5 rounded-xl border border-slate-200/60 mt-2">
-            <span className="font-medium text-slate-400 uppercase tracking-wide block text-[10px]">Amount in Words</span>
-            <span className="font-semibold text-slate-800 text-xs mt-0.5 block italic">{amountInWords}</span>
-          </div>
+         
         </div>
       </div>
 

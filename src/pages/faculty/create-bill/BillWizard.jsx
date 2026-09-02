@@ -102,6 +102,9 @@ export const BillWizard = () => {
     loadData();
   }, []);
 
+  // Editing index: null when creating a new paper, or number when editing/reviewing an existing paper
+  const [editingIndex, setEditingIndex] = useState(null);
+
   // Step 3 Actions: Add More / Continue
   const commitCurrentItem = () => {
     const calculated = calculateItemSubtotal(
@@ -121,7 +124,15 @@ export const BillWizard = () => {
         subjects.find((s) => s.id === currentItem.subject_id)?.name || currentItem.subject_name,
     };
 
-    const updatedItems = [...draft.items, newItem];
+    let updatedItems;
+    if (editingIndex !== null && editingIndex >= 0 && editingIndex < draft.items.length) {
+      // Replace existing item at editingIndex
+      updatedItems = draft.items.map((item, idx) => (idx === editingIndex ? newItem : item));
+    } else {
+      // Append new item
+      updatedItems = [...draft.items, newItem];
+    }
+
     const { grandTotal, amountInWords } = calculateBillCategoryTotals(updatedItems);
 
     setDraft((prev) => ({
@@ -134,6 +145,7 @@ export const BillWizard = () => {
 
   const handleAddMorePaper = () => {
     commitCurrentItem();
+    setEditingIndex(null);
     // Reset current item for next subject
     setCurrentItem({
       class_id: draft.class_id,
@@ -158,6 +170,7 @@ export const BillWizard = () => {
 
   const handleContinueToItems = () => {
     commitCurrentItem();
+    setEditingIndex(null);
     setCurrentStep(4);
   };
 
@@ -175,15 +188,8 @@ export const BillWizard = () => {
   const handleEditItem = (index) => {
     const itemToEdit = draft.items[index];
     if (itemToEdit) {
+      setEditingIndex(index);
       setCurrentItem({ ...itemToEdit });
-      const updated = draft.items.filter((_, i) => i !== index);
-      const { grandTotal, amountInWords } = calculateBillCategoryTotals(updated);
-      setDraft((prev) => ({
-        ...prev,
-        items: updated,
-        grand_total: grandTotal,
-        amount_in_words: amountInWords,
-      }));
       setCurrentStep(3);
     }
   };
@@ -224,6 +230,7 @@ export const BillWizard = () => {
           setDraft={setDraft}
           academicYears={academicYears}
           semesters={semesters}
+          classes={classes}
           onNext={() => setCurrentStep(2)}
           onCancel={() => navigate('/faculty')}
         />
@@ -234,10 +241,17 @@ export const BillWizard = () => {
         <Step2AddPaper
           currentItem={currentItem}
           setCurrentItem={setCurrentItem}
-          classes={classes}
           subjects={subjects}
+          hasExistingItems={draft.items.length > 0}
+          onCancelToAddMore={() => setCurrentStep(4)}
           onNext={() => setCurrentStep(3)}
-          onBack={() => setCurrentStep(1)}
+          onBack={() => {
+            if (draft.items.length > 0) {
+              setCurrentStep(4);
+            } else {
+              setCurrentStep(1);
+            }
+          }}
         />
       )}
 
@@ -260,6 +274,7 @@ export const BillWizard = () => {
           onRemoveItem={handleRemoveItem}
           onEditItem={handleEditItem}
           onAddAnotherPaper={() => {
+            setEditingIndex(null);
             setCurrentItem({
               class_id: draft.class_id,
               subject_id: '',
@@ -280,7 +295,16 @@ export const BillWizard = () => {
             setCurrentStep(2);
           }}
           onNext={() => setCurrentStep(5)}
-          onBack={() => setCurrentStep(3)}
+          onBack={() => {
+            if (draft.items.length > 0) {
+              const lastIdx = draft.items.length - 1;
+              setEditingIndex(lastIdx);
+              setCurrentItem({ ...draft.items[lastIdx] });
+              setCurrentStep(3);
+            } else {
+              setCurrentStep(2);
+            }
+          }}
         />
       )}
 

@@ -7,8 +7,9 @@ import { clsx } from 'clsx';
 export const Step2AddPaper = ({
   currentItem,
   setCurrentItem,
-  classes,
   subjects,
+  hasExistingItems = false,
+  onCancelToAddMore,
   onNext,
   onBack,
 }) => {
@@ -40,27 +41,12 @@ export const Step2AddPaper = ({
           Add Paper Details
         </h2>
         <p className="text-xs sm:text-sm text-slate-500 leading-relaxed">
-          Specify the class, subject course, and examination mode.
+          Specify the subject course and examination mode.
         </p>
       </div>
 
       <div className="bg-white/90 backdrop-blur-md border border-slate-200/80 rounded-xl p-6 sm:p-7 space-y-5 shadow-2xs">
         
-        {/* Class Selection */}
-        <div className="space-y-1.5">
-          <Select
-            label="Class"
-            value={currentItem.class_id || (classes[0]?.id || '')}
-            onChange={(e) =>
-              setCurrentItem((prev) => ({ ...prev, class_id: e.target.value }))
-            }
-            options={classes.map((c) => ({
-              value: c.id,
-              label: `${c.name} (${c.department})`,
-            }))}
-          />
-        </div>
-
         {/* Subject Selection */}
         <div className="space-y-1.5">
           <Select
@@ -68,7 +54,7 @@ export const Step2AddPaper = ({
             value={currentItem.subject_id}
             onChange={handleSubjectChange}
             options={[
-              { value: '', label: '— Select Course Subject —' },
+              { value: '', label: 'Select Course Subject' },
               ...subjects.map((s) => ({
                 value: s.id,
                 label: s.name,
@@ -109,11 +95,12 @@ export const Step2AddPaper = ({
             >
               <div className={clsx('p-2 rounded-lg shrink-0', currentItem.paper_type === 'THEORY' ? 'bg-white/20 text-white' : 'bg-white text-slate-700 shadow-2xs')}>
                 <BookOpen className="w-4 h-4" />
+                
               </div>
-              <div>
-                <p className="text-sm font-semibold tracking-tight">Theory Paper</p>
-                <p className={clsx('text-[11px] mt-0.5', currentItem.paper_type === 'THEORY' ? 'text-slate-300' : 'text-slate-400')}>Question paper sets</p>
-              </div>
+             
+                <p className="text-sm font-semibold self-center tracking-tight">Theory Paper</p>
+               
+              
             </button>
 
             <button
@@ -129,10 +116,7 @@ export const Step2AddPaper = ({
               <div className={clsx('p-2 rounded-lg shrink-0', currentItem.paper_type === 'PRACTICAL' ? 'bg-white/20 text-white' : 'bg-white text-slate-700 shadow-2xs')}>
                 <Code2 className="w-4 h-4" />
               </div>
-              <div>
-                <p className="text-sm font-semibold tracking-tight">Practical Paper</p>
-                <p className={clsx('text-[11px] mt-0.5', currentItem.paper_type === 'PRACTICAL' ? 'text-slate-300' : 'text-slate-400')}>Lab exam setting</p>
-              </div>
+              <p className="text-sm font-semibold self-center tracking-tight">Practical Paper</p>
             </button>
           </div>
         </div>
@@ -148,14 +132,26 @@ export const Step2AddPaper = ({
           Back
         </button>
 
-        <button
-          disabled={!isValid}
-          onClick={onNext}
-          className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl text-xs font-semibold text-white bg-slate-900 hover:bg-slate-800 shadow-sm hover:shadow active:scale-[0.99] transition-all cursor-pointer disabled:opacity-50"
-        >
-          Continue to Rates
-          <ArrowRight className="w-4 h-4" />
-        </button>
+        <div className="flex items-center gap-2.5">
+          {hasExistingItems && (
+            <button
+              type="button"
+              onClick={onCancelToAddMore}
+              className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-medium text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 shadow-2xs transition-all cursor-pointer"
+            >
+              Cancel &amp; Continue with Added Items
+            </button>
+          )}
+
+          <button
+            disabled={!isValid}
+            onClick={onNext}
+            className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl text-xs font-semibold text-white bg-slate-900 hover:bg-slate-800 shadow-sm hover:shadow active:scale-[0.99] transition-all cursor-pointer disabled:opacity-50"
+          >
+            Continue to Rates
+            <ArrowRight className="w-4 h-4" />
+          </button>
+        </div>
       </div>
 
     </div>

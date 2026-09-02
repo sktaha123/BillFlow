@@ -41,34 +41,21 @@ export const FacultyHome = () => {
     <div className="space-y-8 max-w-5xl mx-auto animate-in fade-in duration-200">
       
       {/* 1. HERO HEADER */}
-      <div className="space-y-1.5">
-        <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight text-slate-900">
-          {getTimeGreeting()}, {displayName}
-        </h1>
-        <p className="text-sm text-slate-500 leading-relaxed max-w-xl">
-          Manage, calculate, and submit semester paper-setting remuneration bills with digital signatures.
-        </p>
-      </div>
-
-      {/* 2. PRIMARY ACTION BANNER */}
-      <div className="bg-white/90 backdrop-blur-md border border-slate-200/80 rounded-xl p-6 sm:p-8 shadow-[0_4px_24px_-4px_rgba(15,23,42,0.04)] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 hover:shadow-md transition-all">
-        <div className="space-y-2 max-w-xl">
-          <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">
-            Remuneration Workflow
-          </span>
-          <h2 className="text-xl sm:text-2xl font-semibold text-slate-900 tracking-tight">
-            Create a new paper setting bill
-          </h2>
-          <p className="text-xs sm:text-sm text-slate-500 leading-relaxed">
-            Select classes, add theory and practical paper sets with official college rates, and submit directly to HOD for verification.
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-3xl sm:text-3xl tracking-tight text-slate-900">
+            <span className="font-normal text-slate-900">{getTimeGreeting()}, </span>
+            <span className="font-semibold text-slate-900">{displayName}</span>
+          </h1>
+          <p className="text-sm text-slate-500 mt-1">
+            Manage your paper setting claims and track approval statuses.
           </p>
         </div>
-
         <button
           onClick={() => navigate('/faculty/create-bill')}
-          className="shrink-0 inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-sm font-semibold text-white bg-slate-900 hover:bg-slate-800 shadow-sm hover:shadow active:scale-[0.99] transition-all cursor-pointer w-full sm:w-auto"
+          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-semibold text-white bg-slate-900 hover:bg-slate-800 shadow-sm hover:shadow active:scale-[0.99] transition-all cursor-pointer self-start sm:self-auto"
         >
-          <Plus className="w-4 h-4" />
+          <Plus className="w-3.5 h-3.5" />
           Start New Bill
         </button>
       </div>
@@ -108,7 +95,6 @@ export const FacultyHome = () => {
         <div className="flex items-center justify-between">
           <div>
             <h3 className="text-lg font-semibold text-slate-900 tracking-tight">Recent Submissions</h3>
-            <p className="text-xs text-slate-400 mt-0.5">Your latest examination paper remuneration claims</p>
           </div>
           <button
             onClick={() => navigate('/faculty/my-bills')}
@@ -161,15 +147,15 @@ export const FacultyHome = () => {
                         </span>
                       </td>
                       <td className="py-3.5 px-4 font-medium text-slate-800">
-                        {bill.class?.name || 'TYCS'} • Sem {bill.semester?.roman_label}
+                        {bill.class?.name} , Sem {bill.semester?.roman_label}
                       </td>
                       <td className="py-3.5 px-4 text-slate-600">
-                        {bill.academic_year?.year_label || '2026–27'}
+                        {bill.academic_year?.year_label}
                       </td>
                       <td className="py-3.5 px-4 text-slate-500 font-mono text-[11px]">
                         {bill.submission_date ? new Date(bill.submission_date).toLocaleDateString('en-IN') : 'Draft'}
                       </td>
-                      <td className="py-3.5 px-4">
+                      <td className="py-3.5 px-4 ">
                         <StatusBadge status={bill.status} />
                       </td>
                       <td className="py-3.5 px-4 text-right font-mono font-semibold text-slate-900 text-sm">
@@ -181,10 +167,10 @@ export const FacultyHome = () => {
                             e.stopPropagation();
                             navigate(`/bill/${bill.id}`);
                           }}
-                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 shadow-2xs transition-all cursor-pointer"
+                          className="group inline-flex items-center gap-1.5 text-xs font-medium text-slate-500 hover:text-slate-900 transition-colors cursor-pointer"
                         >
-                          <Eye className="w-3.5 h-3.5 text-slate-400" />
-                          View
+                          <Eye className="w-3.5 h-3.5 text-slate-400 group-hover:text-slate-900 transition-colors" />
+                          <span className="text-slate-500 group-hover:text-slate-900 transition-colors">View</span>
                         </button>
                       </td>
                     </tr>
