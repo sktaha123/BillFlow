@@ -228,7 +228,7 @@ class DataService {
         .from('bills')
         .select(`
           *,
-          faculty:profiles(*),
+          faculty:profiles!bills_faculty_id_fkey(*),
           class:classes(*),
           semester:semesters(*),
           academic_year:academic_years(*),
@@ -237,6 +237,7 @@ class DataService {
         `)
         .order('created_at', { ascending: false });
       if (!error && data) return data;
+      if (error) console.error('[getBills] Supabase error:', error);
     }
     return this.getStore(STORAGE_KEYS.BILLS, []);
   }
@@ -247,7 +248,7 @@ class DataService {
         .from('bills')
         .select(`
           *,
-          faculty:profiles(*),
+          faculty:profiles!bills_faculty_id_fkey(*),
           class:classes(*),
           semester:semesters(*),
           academic_year:academic_years(*),
