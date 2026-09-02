@@ -93,6 +93,7 @@ export const OfficialBillDocument = React.forwardRef(({
         color: '#000000',
         backgroundColor: '#ffffff',
         width: '100%',
+        minWidth: '680px',
         maxWidth: '760px',
         margin: '0 auto',
         padding: '12px 16px',

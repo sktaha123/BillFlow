@@ -315,6 +315,7 @@ export const BillWizard = () => {
           faculty={user}
           onEditBill={() => setCurrentStep(4)}
           onContinueToPreview={() => setCurrentStep('preview')}
+          onSaveSignature={updateSignature}
           onBack={() => setCurrentStep(4)}
         />
       )}

@@ -1,15 +1,35 @@
-import React from 'react';
-import { Eye, Edit3, ShieldCheck } from 'lucide-react';
+import React, { useState } from 'react';
+import { Eye, Edit3, ShieldCheck, PenTool } from 'lucide-react';
 import { calculateBillCategoryTotals, formatCurrency } from '@/lib/calculations';
+import { SignatureModal } from '@/components/signature/SignatureModal';
 
 export const Step5ReviewBill = ({
   draft,
   faculty,
   onEditBill,
   onContinueToPreview,
+  onSaveSignature,
   onBack,
 }) => {
+  const [isSignatureModalOpen, setIsSignatureModalOpen] = useState(false);
   const { totalSetting, totalTranslation, totalProof, grandTotal, amountInWords } = calculateBillCategoryTotals(draft.items);
+
+  const handleProceed = () => {
+    // If faculty has not registered/drawn their signature yet, prompt them first
+    if (!faculty?.signature_path) {
+      setIsSignatureModalOpen(true);
+      return;
+    }
+    onContinueToPreview();
+  };
+
+  const handleSignatureSaved = async (signatureDataUrl) => {
+    if (onSaveSignature) {
+      await onSaveSignature(signatureDataUrl);
+    }
+    setIsSignatureModalOpen(false);
+    onContinueToPreview();
+  };
 
   return (
     <div className="max-w-3xl mx-auto space-y-6 animate-in fade-in duration-200">
@@ -127,13 +147,22 @@ export const Step5ReviewBill = ({
         </button>
 
         <button
-          onClick={onContinueToPreview}
+          onClick={handleProceed}
           className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl text-xs font-semibold text-white bg-slate-900 hover:bg-slate-800 shadow-sm hover:shadow active:scale-[0.99] transition-all cursor-pointer"
         >
           Proceed to Official Bill Preview
           <Eye className="w-4 h-4" />
         </button>
       </div>
+
+      {/* Signature Required Modal */}
+      <SignatureModal
+        isOpen={isSignatureModalOpen}
+        onClose={() => setIsSignatureModalOpen(false)}
+        onSave={handleSignatureSaved}
+        title="Faculty Signature Registration"
+        description="Please register your official digital signature snapshot. Once registered, it will be automatically attached to your bill preview and official submissions."
+      />
 
     </div>
   );

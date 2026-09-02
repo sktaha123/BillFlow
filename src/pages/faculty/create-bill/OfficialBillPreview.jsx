@@ -105,36 +105,38 @@ export const OfficialBillPreview = ({
       </div>
 
       {/* Official Bill Document Canvas */}
-      <div className="bg-slate-100/70 p-3 sm:p-6 rounded-xl border border-slate-200/80 shadow-xs flex justify-center">
-        <OfficialBillDocument
-          ref={docRef}
-          bill={{
-            bill_reference_id: 'CS-2026-DRAFT',
-            grand_total: draft.grand_total,
-            amount_in_words: draft.amount_in_words,
-            submission_date: new Date().toISOString(),
-            status: 'DRAFT',
-          }}
-          faculty={faculty}
-          classItem={{ name: draft.class_name || 'TYCS' }}
-          semester={{
-            roman_label: draft.semester_label,
-            session_type: draft.session_type,
-          }}
-          academicYear={{ year_label: draft.academic_year_label }}
-          items={draft.items}
-          approvals={
-            faculty?.signature_path
-              ? [
-                  {
-                    action: 'SUBMITTED',
-                    signature_snapshot_path: faculty.signature_path,
-                    created_at: new Date().toISOString(),
-                  },
-                ]
-              : []
-          }
-        />
+      <div className="bg-slate-100/70 p-2 sm:p-6 rounded-xl border border-slate-200/80 shadow-xs overflow-x-auto w-full">
+        <div className="min-w-[680px] flex justify-center mx-auto">
+          <OfficialBillDocument
+            ref={docRef}
+            bill={{
+              bill_reference_id: 'CS-2026-DRAFT',
+              grand_total: draft.grand_total,
+              amount_in_words: draft.amount_in_words,
+              submission_date: new Date().toISOString(),
+              status: 'DRAFT',
+            }}
+            faculty={faculty}
+            classItem={{ name: draft.class_name || 'TYCS' }}
+            semester={{
+              roman_label: draft.semester_label,
+              session_type: draft.session_type,
+            }}
+            academicYear={{ year_label: draft.academic_year_label }}
+            items={draft.items}
+            approvals={
+              faculty?.signature_path
+                ? [
+                    {
+                      action: 'SUBMITTED',
+                      signature_snapshot_path: faculty.signature_path,
+                      created_at: new Date().toISOString(),
+                    },
+                  ]
+                : []
+            }
+          />
+        </div>
       </div>
 
       {/* Signature Required Modal */}

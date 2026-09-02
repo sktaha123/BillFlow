@@ -116,17 +116,19 @@ export const OfficialBillViewPage = () => {
         The .print-area class on OfficialBillDocument makes it visible during print.
         The action bar above has .no-print so it's hidden; this div renders cleanly.
       */}
-      <div className="flex justify-center">
-        <OfficialBillDocument
-          ref={docRef}
-          bill={bill}
-          faculty={bill.faculty}
-          classItem={bill.class}
-          semester={bill.semester}
-          academicYear={bill.academic_year}
-          items={bill.items || []}
-          approvals={bill.approvals || []}
-        />
+      <div className="bg-slate-100/70 p-2 sm:p-6 rounded-xl border border-slate-200/80 shadow-xs overflow-x-auto w-full flex justify-center">
+        <div className="min-w-[680px] flex justify-center mx-auto">
+          <OfficialBillDocument
+            ref={docRef}
+            bill={bill}
+            faculty={bill.faculty}
+            classItem={bill.class}
+            semester={bill.semester}
+            academicYear={bill.academic_year}
+            items={bill.items || []}
+            approvals={bill.approvals || []}
+          />
+        </div>
       </div>
 
     </div>
