@@ -8,11 +8,14 @@ export const Step2AddPaper = ({
   currentItem,
   setCurrentItem,
   subjects,
+  billingMethod = 'PAPER_SETTING',
   hasExistingItems = false,
   onCancelToAddMore,
   onNext,
   onBack,
 }) => {
+  const isPaperSetting = billingMethod === 'PAPER_SETTING';
+
   const handleSubjectChange = (e) => {
     const subId = e.target.value;
     const subObj = subjects.find((s) => s.id === subId);
@@ -31,7 +34,9 @@ export const Step2AddPaper = ({
     }));
   };
 
-  const isValid = Boolean(currentItem.subject_id && currentItem.paper_type);
+  const isValid = isPaperSetting
+    ? Boolean(currentItem.subject_id && currentItem.paper_type)
+    : Boolean(currentItem.subject_id);
 
   return (
     <div className="max-w-3xl mx-auto space-y-6 animate-in fade-in duration-200">
@@ -41,7 +46,9 @@ export const Step2AddPaper = ({
           Add Paper Details
         </h2>
         <p className="text-xs sm:text-sm text-slate-500 leading-relaxed">
-          Specify the subject course and examination mode.
+          {isPaperSetting
+            ? 'Specify the subject course and examination mode.'
+            : 'Select the subject course.'}
         </p>
       </div>
 
@@ -77,49 +84,47 @@ export const Step2AddPaper = ({
           />
         </div>
 
-        {/* Examination Type Selector */}
-        <div className="space-y-2 pt-1">
-          <label className="block text-xs font-semibold uppercase tracking-wide text-slate-700">
-            Examination Mode
-          </label>
-          <div className="grid grid-cols-2 gap-3">
-            <button
-              type="button"
-              onClick={() => handleTypeSelect('THEORY')}
-              className={clsx(
-                'p-4 rounded-xl border text-left flex items-start gap-3 transition-all cursor-pointer',
-                currentItem.paper_type === 'THEORY'
-                  ? 'border-slate-900 bg-slate-900 text-white shadow-xs'
-                  : 'border-slate-200/80 bg-slate-50/60 hover:bg-white hover:border-slate-300 text-slate-900'
-              )}
-            >
-              <div className={clsx('p-2 rounded-lg shrink-0', currentItem.paper_type === 'THEORY' ? 'bg-white/20 text-white' : 'bg-white text-slate-700 shadow-2xs')}>
-                <BookOpen className="w-4 h-4" />
-                
-              </div>
-             
+        {/* Examination Type Selector — Only for Paper Setting (Bill 1) */}
+        {isPaperSetting && (
+          <div className="space-y-2 pt-1">
+            <label className="block text-xs font-semibold uppercase tracking-wide text-slate-700">
+              Examination Mode
+            </label>
+            <div className="grid grid-cols-2 gap-3">
+              <button
+                type="button"
+                onClick={() => handleTypeSelect('THEORY')}
+                className={clsx(
+                  'p-4 rounded-xl border text-left flex items-start gap-3 transition-all cursor-pointer',
+                  currentItem.paper_type === 'THEORY'
+                    ? 'border-slate-900 bg-slate-900 text-white shadow-xs'
+                    : 'border-slate-200/80 bg-slate-50/60 hover:bg-white hover:border-slate-300 text-slate-900'
+                )}
+              >
+                <div className={clsx('p-2 rounded-lg shrink-0', currentItem.paper_type === 'THEORY' ? 'bg-white/20 text-white' : 'bg-white text-slate-700 shadow-2xs')}>
+                  <BookOpen className="w-4 h-4" />
+                </div>
                 <p className="text-sm font-semibold self-center tracking-tight">Theory Paper</p>
-               
-              
-            </button>
+              </button>
 
-            <button
-              type="button"
-              onClick={() => handleTypeSelect('PRACTICAL')}
-              className={clsx(
-                'p-4 rounded-xl border text-left flex items-start gap-3 transition-all cursor-pointer',
-                currentItem.paper_type === 'PRACTICAL'
-                  ? 'border-slate-900 bg-slate-900 text-white shadow-xs'
-                  : 'border-slate-200/80 bg-slate-50/60 hover:bg-white hover:border-slate-300 text-slate-900'
-              )}
-            >
-              <div className={clsx('p-2 rounded-lg shrink-0', currentItem.paper_type === 'PRACTICAL' ? 'bg-white/20 text-white' : 'bg-white text-slate-700 shadow-2xs')}>
-                <Code2 className="w-4 h-4" />
-              </div>
-              <p className="text-sm font-semibold self-center tracking-tight">Practical Paper</p>
-            </button>
+              <button
+                type="button"
+                onClick={() => handleTypeSelect('PRACTICAL')}
+                className={clsx(
+                  'p-4 rounded-xl border text-left flex items-start gap-3 transition-all cursor-pointer',
+                  currentItem.paper_type === 'PRACTICAL'
+                    ? 'border-slate-900 bg-slate-900 text-white shadow-xs'
+                    : 'border-slate-200/80 bg-slate-50/60 hover:bg-white hover:border-slate-300 text-slate-900'
+                )}
+              >
+                <div className={clsx('p-2 rounded-lg shrink-0', currentItem.paper_type === 'PRACTICAL' ? 'bg-white/20 text-white' : 'bg-white text-slate-700 shadow-2xs')}>
+                  <Code2 className="w-4 h-4" />
+                </div>
+                <p className="text-sm font-semibold self-center tracking-tight">Practical Paper</p>
+              </button>
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       {/* Action Footer */}

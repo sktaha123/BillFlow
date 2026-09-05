@@ -43,11 +43,9 @@ export const HeadHome = () => {
       </div>
 
       {/* 2. Action Card */}
-      <div className="bg-white/90 backdrop-blur-md border border-slate-200/80 rounded-xl p-6 sm:p-8 shadow-[0_4px_24px_-4px_rgba(15,23,42,0.04)] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 hover:shadow-md transition-all">
+      <div className="bg-white/90 backdrop-blur-md border border-slate-200/80 rounded-xl p-6 sm:p-4 shadow-[0_4px_24px_-4px_rgba(15,23,42,0.04)] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 hover:shadow-md transition-all">
         <div className="space-y-2 max-w-xl">
-          <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">
-            Sanction &amp; Approval
-          </span>
+          
           <h2 className="text-xl sm:text-2xl font-semibold text-slate-900 tracking-tight flex items-center gap-2.5">
             {pendingBills.length > 0 ? (
               <>
@@ -58,11 +56,7 @@ export const HeadHome = () => {
               'All verified bills are finalized'
             )}
           </h2>
-          <p className="text-xs sm:text-sm text-slate-500 leading-relaxed">
-            {pendingBills.length > 0
-              ? 'Review HOD endorsements, verify final remuneration amounts, and apply your Principal signature to sanction payment.'
-              : 'There are no pending HOD-endorsed paper setting bills awaiting sanction at this time.'}
-          </p>
+         
         </div>
 
         {pendingBills.length > 0 && (
@@ -70,7 +64,7 @@ export const HeadHome = () => {
             onClick={() => navigate('/head/pending')}
             className="shrink-0 inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-sm font-semibold text-white bg-slate-900 hover:bg-slate-800 shadow-sm hover:shadow active:scale-[0.99] transition-all cursor-pointer w-full sm:w-auto"
           >
-            Review Claims ({pendingBills.length})
+            Review Bills ({pendingBills.length})
             <ArrowRight className="w-4 h-4" />
           </button>
         )}
@@ -101,7 +95,6 @@ export const HeadHome = () => {
         <div className="flex items-center justify-between">
           <div>
             <h3 className="text-lg font-semibold text-slate-900 tracking-tight">Recently Sanctioned Claims</h3>
-            <p className="text-xs text-slate-400 mt-0.5">Approved examination bills with official seal</p>
           </div>
           <button
             onClick={() => navigate('/bills')}
@@ -144,7 +137,7 @@ export const HeadHome = () => {
                         {b.faculty?.name}
                       </td>
                       <td className="py-3.5 px-4 text-slate-600">
-                        {b.class?.name || 'TYCS'} • Sem {b.semester?.roman_label}
+                        {b.class?.name || 'TYCS'} , Sem {b.semester?.roman_label}
                       </td>
                       <td className="py-3.5 px-4 text-slate-500">
                         {b.academic_year?.year_label}
@@ -161,9 +154,9 @@ export const HeadHome = () => {
                             e.stopPropagation();
                             navigate(`/bill/${b.id}`);
                           }}
-                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 shadow-2xs transition-all cursor-pointer"
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-700 group-hover:text-black transition-all cursor-pointer"
                         >
-                          <Eye className="w-3.5 h-3.5 text-slate-400" />
+                          <Eye className="w-3.5 h-3.5 text-slate-400 group-hover:text-black" />
                           View
                         </button>
                       </td>

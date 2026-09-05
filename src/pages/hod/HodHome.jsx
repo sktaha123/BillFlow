@@ -43,11 +43,9 @@ export const HodHome = () => {
       </div>
 
       {/* 2. Action Card */}
-      <div className="bg-white/90 backdrop-blur-md border border-slate-200/80 rounded-xl p-6 sm:p-8 shadow-[0_4px_24px_-4px_rgba(15,23,42,0.04)] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 hover:shadow-md transition-all">
+      <div className="bg-white/90 backdrop-blur-md border border-slate-200/80 rounded-xl p-4 sm:p-4 shadow-[0_4px_24px_-4px_rgba(15,23,42,0.04)] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 hover:shadow-md transition-all">
         <div className="space-y-2 max-w-xl">
-          <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">
-            Action Required
-          </span>
+         
           <h2 className="text-xl sm:text-2xl font-semibold text-slate-900 tracking-tight flex items-center gap-2.5">
             {pendingBills.length > 0 ? (
               <>
@@ -58,11 +56,7 @@ export const HodHome = () => {
               'All faculty bills are verified'
             )}
           </h2>
-          <p className="text-xs sm:text-sm text-slate-500 leading-relaxed">
-            {pendingBills.length > 0
-              ? 'Verify calculations, check examination rates, and attach your HOD digital signature to forward claims to the Principal.'
-              : 'You have reviewed all pending faculty paper-setting remuneration claims for this session.'}
-          </p>
+          
         </div>
 
         {pendingBills.length > 0 && (
@@ -70,7 +64,7 @@ export const HodHome = () => {
             onClick={() => navigate('/hod/pending')}
             className="shrink-0 inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-sm font-semibold text-white bg-slate-900 hover:bg-slate-800 shadow-sm hover:shadow active:scale-[0.99] transition-all cursor-pointer w-full sm:w-auto"
           >
-            Review Pending ({pendingBills.length})
+            Review Bills ({pendingBills.length})
             <ArrowRight className="w-4 h-4" />
           </button>
         )}
@@ -110,8 +104,7 @@ export const HodHome = () => {
       <div className="space-y-4 pt-2">
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="text-lg font-semibold text-slate-900 tracking-tight">Recent Department Submissions</h3>
-            <p className="text-xs text-slate-400 mt-0.5">Processed and endorsed remuneration claims</p>
+            <h3 className="text-lg font-semibold text-slate-900 ">Recent  Bills</h3>
           </div>
           <button
             onClick={() => navigate('/bills')}
@@ -154,7 +147,7 @@ export const HodHome = () => {
                         {b.faculty?.name}
                       </td>
                       <td className="py-3.5 px-4 text-slate-600">
-                        {b.class?.name || 'TYCS'} • Sem {b.semester?.roman_label}
+                        {b.class?.name || 'TYCS'} ,  Sem {b.semester?.roman_label}
                       </td>
                       <td className="py-3.5 px-4 text-slate-500">
                         {b.academic_year?.year_label}
@@ -171,9 +164,9 @@ export const HodHome = () => {
                             e.stopPropagation();
                             navigate(`/bill/${b.id}`);
                           }}
-                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 shadow-2xs transition-all cursor-pointer"
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs group-hover:text-black font-medium text-slate-700  hover:bg-slate-50  transition-all cursor-pointer"
                         >
-                          <Eye className="w-3.5 h-3.5 text-slate-400" />
+                          <Eye className="w-3.5 h-3.5 text-slate-400 group-hover:text-black " />
                           View
                         </button>
                       </td>

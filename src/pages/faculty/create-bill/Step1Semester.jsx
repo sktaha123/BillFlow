@@ -39,6 +39,37 @@ export const Step1Semester = ({
     }));
   };
 
+  const MONTHS = [
+    'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December'
+  ];
+  const currentCalendarYear = new Date().getFullYear();
+  const YEARS = [
+    currentCalendarYear - 2,
+    currentCalendarYear - 1,
+    currentCalendarYear,
+    currentCalendarYear + 1,
+    currentCalendarYear + 2
+  ].map(String);
+
+  const parts = (draft.month_year || '').trim().split(/\s+/);
+  const selectedMonth = MONTHS.find((m) => m.toLowerCase() === parts[0]?.toLowerCase()) || MONTHS[new Date().getMonth()];
+  const selectedYear  = parts[1] || String(currentCalendarYear);
+
+  const handleMonthChange = (e) => {
+    setDraft((prev) => ({
+      ...prev,
+      month_year: `${e.target.value} ${selectedYear}`,
+    }));
+  };
+
+  const handleYearSelectChange = (e) => {
+    setDraft((prev) => ({
+      ...prev,
+      month_year: `${selectedMonth} ${e.target.value}`,
+    }));
+  };
+
   return (
     <div className="max-w-3xl mx-auto space-y-6 animate-in fade-in duration-200">
       
@@ -113,12 +144,30 @@ export const Step1Semester = ({
             })}
           </div>
 
-          {draft.semester_label && (
-            <div className="mt-3 p-3.5 bg-slate-50 border border-slate-200/70 rounded-xl text-xs text-slate-600 flex items-center gap-2">
-              <Calendar className="w-4 h-4 text-slate-400 shrink-0" />
-              <span>Selected: <strong className="text-slate-900 font-semibold">Semester {draft.semester_label}</strong></span>
+          
+        </div>
+
+        {/* Month & Year Select Dropdowns */}
+        <div className="space-y-2">
+          <label className="block text-xs font-semibold uppercase tracking-wide text-slate-700">
+            Month &amp; Year of Examination
+          </label>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <Select
+                value={selectedMonth}
+                onChange={handleMonthChange}
+                options={MONTHS.map((m) => ({ value: m, label: m }))}
+              />
             </div>
-          )}
+            <div>
+              <Select
+                value={selectedYear}
+                onChange={handleYearSelectChange}
+                options={YEARS.map((y) => ({ value: y, label: y }))}
+              />
+            </div>
+          </div>
         </div>
 
       </div>

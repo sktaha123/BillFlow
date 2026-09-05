@@ -3,7 +3,14 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { dataService } from '@/lib/supabase';
 import { StatusBadge } from '@/components/ui/StatusBadge';
 import { formatCurrency } from '@/lib/calculations';
-import { ChevronLeft, FileText, CheckCircle2, XCircle, ShieldCheck } from 'lucide-react';
+import { ChevronLeft, FileText, CheckCircle2, XCircle } from 'lucide-react';
+
+const METHOD_LABELS = {
+  PAPER_SETTING: 'Paper Setting',
+  ANSWER_BOOK_ASSESSMENT: 'Answer Book / Moderation',
+  PRACTICAL_ASSESSMENT: 'Practical Assessment',
+  ONLINE_EXAMINATION_NEP: 'Online Examination (NEP)',
+};
 
 export const BillDetailsPage = () => {
   const { id } = useParams();
@@ -43,6 +50,8 @@ export const BillDetailsPage = () => {
       </div>
     );
   }
+
+  const method = bill.billing_method || 'PAPER_SETTING';
 
   return (
     <div className="space-y-8 max-w-4xl mx-auto animate-in fade-in duration-200">
@@ -93,7 +102,9 @@ export const BillDetailsPage = () => {
           </div>
           <div className="bg-slate-50/70 p-3.5 rounded-xl border border-slate-200/60">
             <span className="text-slate-400 block text-[10px] uppercase font-semibold">Class &amp; Semester</span>
-            <span className="font-semibold text-slate-900 text-sm mt-0.5 block">{bill.class?.name || 'TYCS'} , Sem {bill.semester?.roman_label}</span>
+            <span className="font-semibold text-slate-900 text-sm mt-0.5 block">
+              {bill.class?.name ? `${bill.class.name} , ` : ''}Sem {bill.semester?.roman_label || bill.semester?.semester_number}
+            </span>
           </div>
           <div className="bg-slate-50/70 p-3.5 rounded-xl border border-slate-200/60">
             <span className="text-slate-400 block text-[10px] uppercase font-semibold">Academic Year</span>
@@ -102,45 +113,132 @@ export const BillDetailsPage = () => {
         </div>
       </div>
 
-      {/* Paper Items Table */}
+      {/* Items Table — Billing Method Specific */}
       <div className="space-y-3">
         <h3 className="text-base font-semibold text-slate-900 tracking-tight">
-          Paper Sets Breakdown
+          Bill Items Breakdown
         </h3>
         <div className="bg-white/90 backdrop-blur-md border border-slate-200/80 rounded-xl overflow-hidden shadow-2xs">
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[580px] text-xs text-left">
-              <thead className="bg-slate-50/80 border-b border-slate-200/80 text-slate-500 font-semibold uppercase tracking-wider text-[10px]">
-                <tr>
-                  <th className="py-3.5 px-4 w-12 text-center">Sr</th>
-                  <th className="py-3.5 px-4">Subject</th>
-                  <th className="py-3.5 px-4">Type</th>
-                  <th className="py-3.5 px-4 text-center">Sets</th>
-                  <th className="py-3.5 px-4 text-right">Setting</th>
-                  <th className="py-3.5 px-4 text-right">Translation</th>
-                  <th className="py-3.5 px-4 text-right">Proof</th>
-                  <th className="py-3.5 px-4 text-right">Subtotal</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                {bill.items?.map((item, idx) => (
-                  <tr key={idx} className="hover:bg-slate-50/60 transition-colors">
-                    <td className="py-3.5 px-4 text-center font-mono text-slate-400">{String(idx + 1).padStart(2, '0')}</td>
-                    <td className="py-3.5 px-4 font-semibold text-slate-900">{item.subject?.name || item.subject_name}</td>
-                    <td className="py-3.5 px-4">
-                      <span className="inline-block px-2.5 py-0.5 rounded-full text-[9px] font-semibold uppercase tracking-wider bg-slate-100 text-slate-700">
-                        {item.paper_type}
-                      </span>
-                    </td>
-                    <td className="py-3.5 px-4 text-center font-mono font-medium text-slate-700">{item.paper_sets}</td>
-                    <td className="py-3.5 px-4 text-right font-mono text-slate-600">{formatCurrency(item.setting_amount)}</td>
-                    <td className="py-3.5 px-4 text-right font-mono text-slate-600">{formatCurrency(item.translation_amount)}</td>
-                    <td className="py-3.5 px-4 text-right font-mono text-slate-600">{formatCurrency(item.proof_amount)}</td>
-                    <td className="py-3.5 px-4 text-right font-mono font-semibold text-slate-900">{formatCurrency(item.subtotal)}</td>
+            {method === 'ANSWER_BOOK_ASSESSMENT' && (
+              <table className="w-full min-w-[580px] text-xs text-left">
+                <thead className="bg-slate-50/80 border-b border-slate-200/80 text-slate-500 font-semibold uppercase tracking-wider text-[10px]">
+                  <tr>
+                    <th className="py-3.5 px-4 w-12 text-center">Sr</th>
+                    <th className="py-3.5 px-4">Subject</th>
+                    <th className="py-3.5 px-4 text-center">Level</th>
+                    <th className="py-3.5 px-4 text-center">Sem End Books</th>
+                    <th className="py-3.5 px-4 text-center">ATKT Books</th>
+                    <th className="py-3.5 px-4 text-center">Internal Books</th>
+                    <th className="py-3.5 px-4 text-right">Subtotal</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {(bill.answer_book_items && bill.answer_book_items.length > 0 ? bill.answer_book_items : (bill.items || [])).map((item, idx) => (
+                    <tr key={idx} className="hover:bg-slate-50/60 transition-colors">
+                      <td className="py-3.5 px-4 text-center font-mono text-slate-400">{String(idx + 1).padStart(2, '0')}</td>
+                      <td className="py-3.5 px-4 font-semibold text-slate-900">{item.subject?.name || item.subject_name}</td>
+                      <td className="py-3.5 px-4 text-center font-semibold">{item.level || item.academic_level || 'UG'}</td>
+                      <td className="py-3.5 px-4 text-center font-mono">{item.semester_end_books || 0}</td>
+                      <td className="py-3.5 px-4 text-center font-mono">{item.atkt_books || 0}</td>
+                      <td className="py-3.5 px-4 text-center font-mono">{item.internal_books || 0}</td>
+                      <td className="py-3.5 px-4 text-right font-mono font-semibold text-slate-900">{formatCurrency(item.subtotal)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+
+            {method === 'PRACTICAL_ASSESSMENT' && (
+              <table className="w-full min-w-[580px] text-xs text-left">
+                <thead className="bg-slate-50/80 border-b border-slate-200/80 text-slate-500 font-semibold uppercase tracking-wider text-[10px]">
+                  <tr>
+                    <th className="py-3.5 px-4 w-12 text-center">Sr</th>
+                    <th className="py-3.5 px-4">Subject</th>
+                    <th className="py-3.5 px-4 text-center">Level</th>
+                    <th className="py-3.5 px-4 text-center">Candidates</th>
+                    <th className="py-3.5 px-4 text-right">Rate / Student</th>
+                    <th className="py-3.5 px-4 text-right">Subtotal</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {(bill.practical_items && bill.practical_items.length > 0 ? bill.practical_items : (bill.items || [])).map((item, idx) => (
+                    <tr key={idx} className="hover:bg-slate-50/60 transition-colors">
+                      <td className="py-3.5 px-4 text-center font-mono text-slate-400">{String(idx + 1).padStart(2, '0')}</td>
+                      <td className="py-3.5 px-4 font-semibold text-slate-900">{item.subject?.name || item.subject_name}</td>
+                      <td className="py-3.5 px-4 text-center font-semibold">{item.level || item.academic_level || 'UG'}</td>
+                      <td className="py-3.5 px-4 text-center font-mono font-medium">{item.practical_books || 0}</td>
+                      <td className="py-3.5 px-4 text-right font-mono text-slate-600">{formatCurrency(item.practical_rate || 25)}</td>
+                      <td className="py-3.5 px-4 text-right font-mono font-semibold text-slate-900">{formatCurrency(item.subtotal)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+
+            {method === 'ONLINE_EXAMINATION_NEP' && (
+              <table className="w-full min-w-[580px] text-xs text-left">
+                <thead className="bg-slate-50/80 border-b border-slate-200/80 text-slate-500 font-semibold uppercase tracking-wider text-[10px]">
+                  <tr>
+                    <th className="py-3.5 px-4 w-12 text-center">Sr</th>
+                    <th className="py-3.5 px-4">Subject</th>
+                    <th className="py-3.5 px-4 text-center">Class</th>
+                    <th className="py-3.5 px-4 text-center">MCQs</th>
+                    <th className="py-3.5 px-4 text-center">Students</th>
+                    <th className="py-3.5 px-4 text-right">Upload Fee</th>
+                    <th className="py-3.5 px-4 text-right">Subtotal</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {(bill.online_items && bill.online_items.length > 0 ? bill.online_items : (bill.items || [])).map((item, idx) => (
+                    <tr key={idx} className="hover:bg-slate-50/60 transition-colors">
+                      <td className="py-3.5 px-4 text-center font-mono text-slate-400">{String(idx + 1).padStart(2, '0')}</td>
+                      <td className="py-3.5 px-4 font-semibold text-slate-900">{item.subject?.name || item.subject_name}</td>
+                      <td className="py-3.5 px-4 text-center">{item.class?.name || item.class_name || bill.class?.name || '—'}</td>
+                      <td className="py-3.5 px-4 text-center font-mono">{item.mcq_count || 0}</td>
+                      <td className="py-3.5 px-4 text-center font-mono">{item.student_count || 0}</td>
+                      <td className="py-3.5 px-4 text-right font-mono text-slate-600">{formatCurrency(item.upload_amount)}</td>
+                      <td className="py-3.5 px-4 text-right font-mono font-semibold text-slate-900">{formatCurrency(item.subtotal)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+
+            {method === 'PAPER_SETTING' && (
+              <table className="w-full min-w-[580px] text-xs text-left">
+                <thead className="bg-slate-50/80 border-b border-slate-200/80 text-slate-500 font-semibold uppercase tracking-wider text-[10px]">
+                  <tr>
+                    <th className="py-3.5 px-4 w-12 text-center">Sr</th>
+                    <th className="py-3.5 px-4">Subject</th>
+                    <th className="py-3.5 px-4">Type</th>
+                    <th className="py-3.5 px-4 text-center">Sets</th>
+                    <th className="py-3.5 px-4 text-right">Setting</th>
+                    <th className="py-3.5 px-4 text-right">Translation</th>
+                    <th className="py-3.5 px-4 text-right">Proof</th>
+                    <th className="py-3.5 px-4 text-right">Subtotal</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {bill.items?.map((item, idx) => (
+                    <tr key={idx} className="hover:bg-slate-50/60 transition-colors">
+                      <td className="py-3.5 px-4 text-center font-mono text-slate-400">{String(idx + 1).padStart(2, '0')}</td>
+                      <td className="py-3.5 px-4 font-semibold text-slate-900">{item.subject?.name || item.subject_name}</td>
+                      <td className="py-3.5 px-4">
+                        <span className="inline-block px-2.5 py-0.5 rounded-full text-[9px] font-semibold uppercase tracking-wider bg-slate-100 text-slate-700">
+                          {item.paper_type}
+                        </span>
+                      </td>
+                      <td className="py-3.5 px-4 text-center font-mono font-medium text-slate-700">{item.paper_sets}</td>
+                      <td className="py-3.5 px-4 text-right font-mono text-slate-600">{formatCurrency(item.setting_amount)}</td>
+                      <td className="py-3.5 px-4 text-right font-mono text-slate-600">{formatCurrency(item.translation_amount)}</td>
+                      <td className="py-3.5 px-4 text-right font-mono text-slate-600">{formatCurrency(item.proof_amount)}</td>
+                      <td className="py-3.5 px-4 text-right font-mono font-semibold text-slate-900">{formatCurrency(item.subtotal)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
           </div>
         </div>
       </div>
@@ -151,7 +249,9 @@ export const BillDetailsPage = () => {
           <span className="uppercase tracking-wide">Total Amount</span>
           <span className="font-mono text-xl font-bold">{formatCurrency(bill.grand_total)}</span>
         </div>
-
+        {bill.amount_in_words && (
+          <p className="text-xs text-slate-500 italic mt-1">{bill.amount_in_words}</p>
+        )}
       </div>
 
       {/* Approval Audit Trail */}

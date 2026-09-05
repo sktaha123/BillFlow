@@ -1,5 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
-import { DEFAULT_RATES, calculateBillCategoryTotals } from './calculations';
+import { DEFAULT_RATES, calculateBillCategoryTotals, calculateGenericGrandTotal } from './calculations';
 
 // Initialize Supabase Client if env variables are available (supports Vite & Vercel Supabase integration)
 const supabaseUrl =
@@ -17,7 +17,7 @@ const supabaseAnonKey =
 export const isSupabaseConfigured = Boolean(supabaseUrl && supabaseAnonKey);
 
 export const supabase = isSupabaseConfigured
-  ? createClient(supabaseUrl, supabaseAnonKey)
+  ? (globalThis.__supabaseClientInstance || (globalThis.__supabaseClientInstance = createClient(supabaseUrl, supabaseAnonKey)))
   : null;
 
 // ============================================================
@@ -73,12 +73,12 @@ export const SEED_ACADEMIC_YEARS = [
 ];
 
 export const SEED_SEMESTERS = [
-  { id: 'sem-1', semester_number: 1, roman_label: 'I', session_type: 'Winter Session' },
-  { id: 'sem-2', semester_number: 2, roman_label: 'II', session_type: 'Summer Session' },
+  { id: 'sem-1', semester_number: 1, roman_label: 'I',   session_type: 'Winter Session' },
+  { id: 'sem-2', semester_number: 2, roman_label: 'II',  session_type: 'Summer Session' },
   { id: 'sem-3', semester_number: 3, roman_label: 'III', session_type: 'Winter Session' },
-  { id: 'sem-4', semester_number: 4, roman_label: 'IV', session_type: 'Summer Session' },
-  { id: 'sem-5', semester_number: 5, roman_label: 'V', session_type: 'Winter Session' },
-  { id: 'sem-6', semester_number: 6, roman_label: 'VI', session_type: 'Summer Session' }
+  { id: 'sem-4', semester_number: 4, roman_label: 'IV',  session_type: 'Summer Session' },
+  { id: 'sem-5', semester_number: 5, roman_label: 'V',   session_type: 'Winter Session' },
+  { id: 'sem-6', semester_number: 6, roman_label: 'VI',  session_type: 'Summer Session' }
 ];
 
 export const SEED_CLASSES = [
@@ -86,19 +86,44 @@ export const SEED_CLASSES = [
 ];
 
 export const SEED_SUBJECTS = [
-  { id: 'sub-ai', class_id: 'cls-tycs', name: 'Introduction to AI', active: true },
-  { id: 'sub-daa', class_id: 'cls-tycs', name: 'DAA', active: true },
-  { id: 'sub-fuzzy', class_id: 'cls-tycs', name: 'Fuzzy Logic', active: true },
-  { id: 'sub-blockchain', class_id: 'cls-tycs', name: 'Blockchain Technology', active: true }
+  { id: 'sub-ai',         class_id: 'cls-tycs', name: 'Introduction to AI',     active: true },
+  { id: 'sub-daa',        class_id: 'cls-tycs', name: 'DAA',                    active: true },
+  { id: 'sub-fuzzy',      class_id: 'cls-tycs', name: 'Fuzzy Logic',            active: true },
+  { id: 'sub-blockchain', class_id: 'cls-tycs', name: 'Blockchain Technology',  active: true }
 ];
 
 const STORAGE_KEYS = {
-  PROFILES: 'bk_profiles',
-  BILLS: 'bk_bills',
-  SETTINGS: 'bk_settings',
-  SIGNATURES: 'bk_signatures_store',
+  PROFILES:     'bk_profiles',
+  BILLS:        'bk_bills',
+  SETTINGS:     'bk_settings',
+  SIGNATURES:   'bk_signatures_store',
   BILL_COUNTER: 'bk_bill_counter'
 };
+
+// ─── Full Supabase bill select fragment ───────────────────────────────────────
+const BILL_SELECT = `
+  *,
+  faculty:profiles!bills_faculty_id_fkey(*),
+  class:classes(*),
+  semester:semesters(*),
+  academic_year:academic_years(*),
+  items:bill_items(*, subject:subjects(*)),
+  answer_book_items:answer_book_assessment_items(*, subject:subjects(*), class:classes(*)),
+  practical_items:practical_assessment_items(*, subject:subjects(*)),
+  online_items:online_examination_items(*, subject:subjects(*), class:classes(*)),
+  approvals:bill_approvals(*, user:profiles(*))
+`;
+
+// Fallback basic select if migration script hasn't been executed on Supabase yet
+const BILL_SELECT_BASIC = `
+  *,
+  faculty:profiles!bills_faculty_id_fkey(*),
+  class:classes(*),
+  semester:semesters(*),
+  academic_year:academic_years(*),
+  items:bill_items(*, subject:subjects(*)),
+  approvals:bill_approvals(*, user:profiles(*))
+`;
 
 class DataService {
   getStore(key, defaultVal) {
@@ -181,7 +206,7 @@ class DataService {
   async getSettings() {
     if (isSupabaseConfigured && supabase) {
       const { data, error } = await supabase.from('system_settings').select('*').limit(1).single();
-      if (!error && data) return data;
+      if (!error && data) return { ...DEFAULT_RATES, ...data };
     }
     return this.getStore(STORAGE_KEYS.SETTINGS, DEFAULT_RATES);
   }
@@ -224,40 +249,44 @@ class DataService {
   // ── Bills ──
   async getBills() {
     if (isSupabaseConfigured && supabase) {
-      const { data, error } = await supabase
+      let { data, error } = await supabase
         .from('bills')
-        .select(`
-          *,
-          faculty:profiles!bills_faculty_id_fkey(*),
-          class:classes(*),
-          semester:semesters(*),
-          academic_year:academic_years(*),
-          items:bill_items(*, subject:subjects(*)),
-          approvals:bill_approvals(*, user:profiles(*))
-        `)
+        .select(BILL_SELECT)
         .order('created_at', { ascending: false });
-      if (!error && data) return data;
-      if (error) console.error('[getBills] Supabase error:', error);
+
+      if (error) {
+        // Fallback to basic query if new tables don't exist yet in Supabase
+        const fallback = await supabase
+          .from('bills')
+          .select(BILL_SELECT_BASIC)
+          .order('created_at', { ascending: false });
+        if (!fallback.error && fallback.data) data = fallback.data;
+      }
+
+      if (data) return data;
     }
     return this.getStore(STORAGE_KEYS.BILLS, []);
   }
 
   async getBillById(id) {
     if (isSupabaseConfigured && supabase) {
-      const { data, error } = await supabase
+      let { data, error } = await supabase
         .from('bills')
-        .select(`
-          *,
-          faculty:profiles!bills_faculty_id_fkey(*),
-          class:classes(*),
-          semester:semesters(*),
-          academic_year:academic_years(*),
-          items:bill_items(*, subject:subjects(*)),
-          approvals:bill_approvals(*, user:profiles(*))
-        `)
+        .select(BILL_SELECT)
         .or(`id.eq.${id},bill_reference_id.eq.${id}`)
         .single();
-      if (!error && data) return data;
+
+      if (error) {
+        // Fallback to basic query if new tables don't exist yet in Supabase
+        const fallback = await supabase
+          .from('bills')
+          .select(BILL_SELECT_BASIC)
+          .or(`id.eq.${id},bill_reference_id.eq.${id}`)
+          .single();
+        if (!fallback.error && fallback.data) data = fallback.data;
+      }
+
+      if (data) return data;
     }
     const bills = await this.getBills();
     return bills.find(b => b.id === id || b.bill_reference_id === id) || null;
@@ -266,12 +295,15 @@ class DataService {
   generateBillRef() {
     const counter = this.getStore(STORAGE_KEYS.BILL_COUNTER, 1);
     this.setStore(STORAGE_KEYS.BILL_COUNTER, counter + 1);
-    const year = new Date().getFullYear();
+    const year   = new Date().getFullYear();
     const padNum = String(counter).padStart(4, '0');
     return `CS-${year}-${padNum}`;
   }
 
-  async createAndSubmitBill(faculty, classId, semesterId, academicYearId, items) {
+  // ────────────────────────────────────────────────────────────────────────────
+  // PAPER SETTING BILL
+  // ────────────────────────────────────────────────────────────────────────────
+  async createAndSubmitBill(faculty, classId, semesterId, academicYearId, items, monthYear) {
     if (!faculty.signature_path) {
       throw new Error('Faculty signature is required before submitting the bill.');
     }
@@ -279,20 +311,20 @@ class DataService {
     const { grandTotal, amountInWords } = calculateBillCategoryTotals(items);
     const now = new Date().toISOString();
 
-    // ── SUPABASE DIRECT INSERTION ──
     if (isSupabaseConfigured && supabase) {
-      // 1. Insert into bills table
       const { data: billRecord, error: billErr } = await supabase
         .from('bills')
         .insert({
-          faculty_id: faculty.id,
-          class_id: classId,
-          semester_id: semesterId,
+          faculty_id:       faculty.id,
+          class_id:         classId,
+          semester_id:      semesterId,
           academic_year_id: academicYearId,
-          status: 'PENDING_HOD',
-          grand_total: grandTotal,
-          amount_in_words: amountInWords,
-          submission_date: now.split('T')[0],
+          billing_method:   'PAPER_SETTING',
+          month_year:       monthYear || null,
+          status:           'PENDING_HOD',
+          grand_total:      grandTotal,
+          amount_in_words:  amountInWords,
+          submission_date:  now.split('T')[0],
         })
         .select()
         .single();
@@ -302,63 +334,56 @@ class DataService {
         throw new Error(billErr?.message || 'Failed to create bill in database.');
       }
 
-      // 2. Insert line items
       const itemsToInsert = items.map((it) => ({
-        bill_id: billRecord.id,
-        subject_id: it.subject_id,
-        paper_type: it.paper_type || 'THEORY',
-        paper_sets: it.paper_sets || 0,
-        setting_rate: it.setting_rate || 400,
-        setting_amount: it.setting_amount || 0,
-        translation_sets: it.translation_sets || 0,
-        translation_rate: it.translation_rate || 250,
+        bill_id:           billRecord.id,
+        subject_id:        it.subject_id,
+        paper_type:        it.paper_type || 'THEORY',
+        paper_sets:        it.paper_sets || 0,
+        setting_rate:      it.setting_rate || 400,
+        setting_amount:    it.setting_amount || 0,
+        translation_sets:  it.translation_sets || 0,
+        translation_rate:  it.translation_rate || 250,
         translation_amount: it.translation_amount || 0,
-        proof_papers: it.proof_papers || 0,
-        proof_rate: it.proof_rate || 100,
-        proof_amount: it.proof_amount || 0,
-        subtotal: it.subtotal || 0,
-        student_count: it.student_count || '',
+        proof_papers:      it.proof_papers || 0,
+        proof_rate:        it.proof_rate || 100,
+        proof_amount:      it.proof_amount || 0,
+        subtotal:          it.subtotal || 0,
+        student_count:     it.student_count || '',
       }));
 
-      const { error: itemsErr } = await supabase.from('bill_items').insert(itemsToInsert);
-      if (itemsErr) {
-        console.error('Supabase bill items insert error:', itemsErr);
-      }
+      await supabase.from('bill_items').insert(itemsToInsert);
 
-      // 3. Insert submission approval record with immutable signature snapshot
-      const { error: appErr } = await supabase.from('bill_approvals').insert({
-        bill_id: billRecord.id,
-        user_id: faculty.id,
-        role: 'FACULTY',
-        action: 'SUBMITTED',
-        comment: 'Bill created and submitted for HOD verification',
-        signature_snapshot_path: faculty.signature_path,
+      await supabase.from('bill_approvals').insert({
+        bill_id:                  billRecord.id,
+        user_id:                  faculty.id,
+        role:                     'FACULTY',
+        action:                   'SUBMITTED',
+        comment:                  'Bill created and submitted for HOD verification',
+        signature_snapshot_path:  faculty.signature_path,
       });
-      if (appErr) {
-        console.error('Supabase approval insert error:', appErr);
-      }
 
-      // Fetch the full joined bill from Supabase
       return await this.getBillById(billRecord.id);
     }
 
-    // ── LocalStorage Fallback (only if no Supabase) ──
-    const billId = 'bill-' + Date.now();
+    // LocalStorage Fallback
+    const billId  = 'bill-' + Date.now();
     const billRef = this.generateBillRef();
-    const academicYears = await this.getAcademicYears();
-    const semesters = await this.getSemesters();
-    const classes = await this.getClasses();
-    const subjects = await this.getSubjects();
+    const [academicYears, semesters, classes, subjects] = await Promise.all([
+      this.getAcademicYears(),
+      this.getSemesters(),
+      this.getClasses(),
+      this.getSubjects(),
+    ]);
 
     const academicYear = academicYears.find(ay => ay.id === academicYearId) || academicYears[0];
-    const semester = semesters.find(s => s.id === semesterId) || semesters[0];
-    const cls = classes.find(c => c.id === classId) || classes[0];
+    const semester     = semesters.find(s => s.id === semesterId) || semesters[0];
+    const cls          = classes.find(c => c.id === classId) || classes[0];
 
     const mappedItems = items.map((it, idx) => ({
       ...it,
-      id: `item-${Date.now()}-${idx}`,
-      bill_id: billId,
-      subject: subjects.find(s => s.id === it.subject_id),
+      id:           `item-${Date.now()}-${idx}`,
+      bill_id:      billId,
+      subject:      subjects.find(s => s.id === it.subject_id),
       subject_name: subjects.find(s => s.id === it.subject_id)?.name || 'Subject'
     }));
 
@@ -376,64 +401,244 @@ class DataService {
     };
 
     const newBill = {
-      id: billId,
+      id:               billId,
       bill_reference_id: billRef,
-      faculty_id: faculty.id,
-      faculty: faculty,
-      class_id: classId,
-      class: cls,
-      semester_id: semesterId,
-      semester: semester,
+      faculty_id:       faculty.id,
+      faculty:          faculty,
+      class_id:         classId,
+      class:            cls,
+      semester_id:      semesterId,
+      semester:         semester,
       academic_year_id: academicYearId,
-      academic_year: academicYear,
-      status: 'PENDING_HOD',
-      grand_total: grandTotal,
-      amount_in_words: amountInWords,
-      submission_date: now.split('T')[0],
-      created_at: now,
-      updated_at: now,
-      items: mappedItems,
-      approvals: [submissionApproval]
+      academic_year:    academicYear,
+      billing_method:   'PAPER_SETTING',
+      month_year:       monthYear || null,
+      status:           'PENDING_HOD',
+      grand_total:      grandTotal,
+      amount_in_words:  amountInWords,
+      submission_date:  now.split('T')[0],
+      created_at:       now,
+      updated_at:       now,
+      items:            mappedItems,
+      answer_book_items: [],
+      practical_items:  [],
+      online_items:     [],
+      approvals:        [submissionApproval]
     };
 
     const bills = this.getStore(STORAGE_KEYS.BILLS, []);
     bills.unshift(newBill);
     this.setStore(STORAGE_KEYS.BILLS, bills);
-
     return newBill;
   }
 
+  // ────────────────────────────────────────────────────────────────────────────
+  // NEW BILLING METHODS — generic submit function
+  // ────────────────────────────────────────────────────────────────────────────
+  async createAndSubmitNewMethodBill(faculty, billingMethod, billData, items) {
+    if (!faculty.signature_path) {
+      throw new Error('Faculty signature is required before submitting the bill.');
+    }
+    if (!items || items.length === 0) {
+      throw new Error('At least one bill item is required.');
+    }
+
+    const { grandTotal, amountInWords } = calculateGenericGrandTotal(items);
+    const now = new Date().toISOString();
+
+    const itemTableMap = {
+      ANSWER_BOOK_ASSESSMENT: 'answer_book_assessment_items',
+      PRACTICAL_ASSESSMENT:   'practical_assessment_items',
+      ONLINE_EXAMINATION_NEP: 'online_examination_items',
+    };
+    const itemTable = itemTableMap[billingMethod];
+
+    if (isSupabaseConfigured && supabase) {
+      const { data: billRecord, error: billErr } = await supabase
+        .from('bills')
+        .insert({
+          faculty_id:       faculty.id,
+          class_id:         billData.class_id || null,
+          semester_id:      billData.semester_id,
+          academic_year_id: billData.academic_year_id,
+          billing_method:   billingMethod,
+          month_year:       billData.month_year || null,
+          hod_name:         billData.hod_name || null,
+          status:           'PENDING_HOD',
+          grand_total:      grandTotal,
+          amount_in_words:  amountInWords,
+          submission_date:  now.split('T')[0],
+        })
+        .select()
+        .single();
+
+      if (billErr || !billRecord) {
+        console.error('Supabase bill insert error:', billErr);
+        throw new Error(billErr?.message || 'Failed to create bill in database.');
+      }
+
+      let itemsToInsert = [];
+      if (billingMethod === 'ANSWER_BOOK_ASSESSMENT') {
+        itemsToInsert = items.map((it) => ({
+          bill_id:             billRecord.id,
+          class_id:            it.class_id || billData.class_id || null,
+          subject_id:          it.subject_id || null,
+          subject_name:        it.subject?.name || it.subject_name || 'Subject',
+          class_name:          it.class_name || billData.class_name || 'SYCS',
+          level:               it.level || it.academic_level || 'UG',
+          semester_end_books:  it.semester_end_books || 0,
+          atkt_books:          it.atkt_books || 0,
+          internal_books:      it.internal_books || 0,
+          semester_end_rate:   it.semester_end_rate || 8.00,
+          atkt_rate:           it.atkt_rate || 8.00,
+          internal_rate:       it.internal_rate || 4.00,
+          semester_end_amount: it.semester_end_amount || 0.00,
+          atkt_amount:         it.atkt_amount || 0.00,
+          internal_amount:     it.internal_amount || 0.00,
+          subtotal:            it.subtotal || 0.00,
+        }));
+      } else if (billingMethod === 'PRACTICAL_ASSESSMENT') {
+        itemsToInsert = items.map((it) => ({
+          bill_id:          billRecord.id,
+          subject_id:       it.subject_id || null,
+          subject_name:     it.subject?.name || it.subject_name || 'Subject',
+          level:            it.level || it.academic_level || 'UG',
+          practical_books:  it.practical_books || 0,
+          practical_rate:   it.practical_rate || 25.00,
+          practical_amount: it.subtotal || it.practical_amount || 0.00,
+          subtotal:         it.subtotal || 0.00,
+        }));
+      } else if (billingMethod === 'ONLINE_EXAMINATION_NEP') {
+        itemsToInsert = items.map((it) => ({
+          bill_id:           billRecord.id,
+          class_id:          it.class_id || billData.class_id || null,
+          subject_id:        it.subject_id || null,
+          subject_name:      it.subject?.name || it.subject_name || 'Subject',
+          class_name:        it.class_name || billData.class_name || 'FYCS',
+          mcq_count:         it.mcq_count || 0,
+          student_count:     it.student_count || 0,
+          see_rate:          it.see_rate || 7.00,
+          answer_key_rate:   it.answer_key_rate || 2.00,
+          cia_rate:          it.cia_rate || 4.00,
+          upload_rate:       it.upload_rate || 150.00,
+          see_amount:        it.see_amount || 0.00,
+          answer_key_amount: it.answer_key_amount || 0.00,
+          cia_amount:        it.cia_amount || 0.00,
+          upload_amount:     it.upload_amount || 150.00,
+          subtotal:          it.subtotal || 0.00,
+        }));
+      }
+
+      const { error: itemsErr } = await supabase.from(itemTable).insert(itemsToInsert);
+      if (itemsErr) {
+        console.error(`[BillFlow] Error inserting into ${itemTable}:`, itemsErr);
+      }
+
+      await supabase.from('bill_approvals').insert({
+        bill_id:                 billRecord.id,
+        user_id:                 faculty.id,
+        role:                    'FACULTY',
+        action:                  'SUBMITTED',
+        comment:                 'Bill created and submitted for HOD verification',
+        signature_snapshot_path: faculty.signature_path,
+      });
+
+      return await this.getBillById(billRecord.id);
+    }
+
+    // LocalStorage Fallback
+    const billId  = 'bill-' + Date.now();
+    const billRef = this.generateBillRef();
+    const [academicYears, semesters] = await Promise.all([
+      this.getAcademicYears(),
+      this.getSemesters(),
+    ]);
+
+    const academicYear = academicYears.find(ay => ay.id === billData.academic_year_id) || academicYears[0];
+    const semester     = semesters.find(s => s.id === billData.semester_id) || semesters[0];
+
+    const mappedItems = items.map((it, idx) => ({
+      ...it,
+      id:      `item-${Date.now()}-${idx}`,
+      bill_id: billId,
+    }));
+
+    const submissionApproval = {
+      id: 'app-' + Date.now(),
+      bill_id: billId,
+      user_id: faculty.id,
+      user: faculty,
+      user_name: faculty.name,
+      role: 'FACULTY',
+      action: 'SUBMITTED',
+      comment: 'Bill created and submitted for HOD verification',
+      signature_snapshot_path: faculty.signature_path,
+      created_at: now
+    };
+
+    const newBill = {
+      id:               billId,
+      bill_reference_id: billRef,
+      faculty_id:       faculty.id,
+      faculty:          faculty,
+      class_id:         billData.class_id || null,
+      class:            null,
+      semester_id:      billData.semester_id,
+      semester:         semester,
+      academic_year_id: billData.academic_year_id,
+      academic_year:    academicYear,
+      billing_method:   billingMethod,
+      month_year:       billData.month_year || null,
+      hod_name:         billData.hod_name || null,
+      status:           'PENDING_HOD',
+      grand_total:      grandTotal,
+      amount_in_words:  amountInWords,
+      submission_date:  now.split('T')[0],
+      created_at:       now,
+      updated_at:       now,
+      items:            [],
+      answer_book_items: billingMethod === 'ANSWER_BOOK_ASSESSMENT' ? mappedItems : [],
+      practical_items:  billingMethod === 'PRACTICAL_ASSESSMENT'   ? mappedItems : [],
+      online_items:     billingMethod === 'ONLINE_EXAMINATION_NEP' ? mappedItems : [],
+      approvals:        [submissionApproval]
+    };
+
+    const bills = this.getStore(STORAGE_KEYS.BILLS, []);
+    bills.unshift(newBill);
+    this.setStore(STORAGE_KEYS.BILLS, bills);
+    return newBill;
+  }
+
+  // ────────────────────────────────────────────────────────────────────────────
+  // HOD ACTION
+  // ────────────────────────────────────────────────────────────────────────────
   async processHODAction(billId, hod, action, comment) {
     if (action === 'APPROVE' && !hod.signature_path) {
       throw new Error('HOD signature is required before approval.');
     }
 
-    const now = new Date().toISOString();
+    const now           = new Date().toISOString();
     const approvalAction = action === 'APPROVE' ? 'APPROVED' : 'REJECTED';
-    const newStatus = action === 'APPROVE' ? 'PENDING_HEAD' : 'REJECTED_BY_HOD';
+    const newStatus     = action === 'APPROVE' ? 'PENDING_HEAD' : 'REJECTED_BY_HOD';
 
-    // ── SUPABASE DIRECT UPDATE ──
     if (isSupabaseConfigured && supabase) {
-      // 1. Update bill status
       await supabase
         .from('bills')
         .update({ status: newStatus, updated_at: now })
         .eq('id', billId);
 
-      // 2. Insert approval record with signature snapshot
       await supabase.from('bill_approvals').insert({
-        bill_id: billId,
-        user_id: hod.id,
-        role: 'HOD',
-        action: approvalAction,
-        comment: comment || (action === 'APPROVE' ? 'Verified and recommended to Head' : 'Rejected by HOD'),
+        bill_id:                 billId,
+        user_id:                 hod.id,
+        role:                    'HOD',
+        action:                  approvalAction,
+        comment:                 comment || (action === 'APPROVE' ? 'Verified and recommended to Head' : 'Rejected by HOD'),
         signature_snapshot_path: action === 'APPROVE' ? hod.signature_path : null,
       });
 
       return await this.getBillById(billId);
     }
 
-    // ── LocalStorage Fallback ──
     const bills = this.getStore(STORAGE_KEYS.BILLS, []);
     const index = bills.findIndex(b => b.id === billId);
     if (index === -1) throw new Error('Bill not found');
@@ -452,47 +657,45 @@ class DataService {
       created_at: now
     };
 
-    bill.status = newStatus;
+    bill.status     = newStatus;
     bill.updated_at = now;
-    bill.approvals = bill.approvals || [];
+    bill.approvals  = bill.approvals || [];
     bill.approvals.push(approvalRecord);
-
     bills[index] = bill;
     this.setStore(STORAGE_KEYS.BILLS, bills);
     return bill;
   }
 
+  // ────────────────────────────────────────────────────────────────────────────
+  // HEAD ACTION
+  // ────────────────────────────────────────────────────────────────────────────
   async processHeadAction(billId, head, action, comment) {
     if (action === 'FINALIZE' && !head.signature_path) {
       throw new Error('Head signature is required before finalization.');
     }
 
-    const now = new Date().toISOString();
+    const now           = new Date().toISOString();
     const approvalAction = action === 'FINALIZE' ? 'FINALIZED' : 'REJECTED';
-    const newStatus = action === 'FINALIZE' ? 'FINALIZED' : 'REJECTED_BY_HEAD';
+    const newStatus     = action === 'FINALIZE' ? 'FINALIZED' : 'REJECTED_BY_HEAD';
 
-    // ── SUPABASE DIRECT UPDATE ──
     if (isSupabaseConfigured && supabase) {
-      // 1. Update bill status
       await supabase
         .from('bills')
         .update({ status: newStatus, updated_at: now })
         .eq('id', billId);
 
-      // 2. Insert approval record with signature snapshot
       await supabase.from('bill_approvals').insert({
-        bill_id: billId,
-        user_id: head.id,
-        role: 'HEAD',
-        action: approvalAction,
-        comment: comment || (action === 'FINALIZE' ? 'Approved & sanctioned for disbursement' : 'Rejected by Head'),
+        bill_id:                 billId,
+        user_id:                 head.id,
+        role:                    'HEAD',
+        action:                  approvalAction,
+        comment:                 comment || (action === 'FINALIZE' ? 'Approved & sanctioned for disbursement' : 'Rejected by Head'),
         signature_snapshot_path: action === 'FINALIZE' ? head.signature_path : null,
       });
 
       return await this.getBillById(billId);
     }
 
-    // ── LocalStorage Fallback ──
     const bills = this.getStore(STORAGE_KEYS.BILLS, []);
     const index = bills.findIndex(b => b.id === billId);
     if (index === -1) throw new Error('Bill not found');
@@ -511,11 +714,10 @@ class DataService {
       created_at: now
     };
 
-    bill.status = newStatus;
+    bill.status     = newStatus;
     bill.updated_at = now;
-    bill.approvals = bill.approvals || [];
+    bill.approvals  = bill.approvals || [];
     bill.approvals.push(approvalRecord);
-
     bills[index] = bill;
     this.setStore(STORAGE_KEYS.BILLS, bills);
     return bill;

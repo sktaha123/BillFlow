@@ -7,6 +7,7 @@ import { ChevronLeft, Printer, Download, Send } from 'lucide-react';
 export const OfficialBillPreview = ({
   draft,
   faculty,
+  billingMethod,
   onSubmit,
   onBack,
   onSaveSignature,
@@ -15,6 +16,8 @@ export const OfficialBillPreview = ({
   const [isSignatureModalOpen, setIsSignatureModalOpen] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
   const docRef = useRef(null);
+
+  const activeMethod = draft.billing_method || billingMethod || 'PAPER_SETTING';
 
   const handlePrint = () => {
     window.print();
@@ -25,7 +28,7 @@ export const OfficialBillPreview = ({
       setIsDownloading(true);
       await downloadOfficialBillPdf(
         docRef.current || '#official-bill-document',
-        `Official-Bill-Sem${draft.semester_label || 'VI'}.pdf`
+        `Official-Bill-${activeMethod}.pdf`
       );
     } catch (err) {
       console.error('PDF export failed', err);
@@ -52,7 +55,7 @@ export const OfficialBillPreview = ({
   return (
     <div className="space-y-6 max-w-4xl mx-auto animate-in fade-in duration-200">
       
-      {/* Top Action Bar (hidden on print) */}
+      {/* Top Action Bar */}
       <div className="no-print flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 sm:p-5 rounded-xl bg-white/90 backdrop-blur-md border border-slate-200/80 shadow-2xs">
         <div>
           <h2 className="text-base font-semibold text-slate-900">Official Document Preview</h2>
@@ -105,37 +108,45 @@ export const OfficialBillPreview = ({
       </div>
 
       {/* Official Bill Document Canvas */}
-      <div className="bg-slate-100/70 p-2 sm:p-6 rounded-xl border border-slate-200/80 shadow-xs overflow-x-auto w-full">
-        <div className="min-w-[680px] flex justify-center mx-auto">
-          <OfficialBillDocument
-            ref={docRef}
-            bill={{
-              bill_reference_id: 'CS-2026-DRAFT',
-              grand_total: draft.grand_total,
-              amount_in_words: draft.amount_in_words,
-              submission_date: new Date().toISOString(),
-              status: 'DRAFT',
-            }}
-            faculty={faculty}
-            classItem={{ name: draft.class_name || 'TYCS' }}
-            semester={{
-              roman_label: draft.semester_label,
-              session_type: draft.session_type,
-            }}
-            academicYear={{ year_label: draft.academic_year_label }}
-            items={draft.items}
-            approvals={
-              faculty?.signature_path
-                ? [
-                    {
-                      action: 'SUBMITTED',
-                      signature_snapshot_path: faculty.signature_path,
-                      created_at: new Date().toISOString(),
-                    },
-                  ]
-                : []
-            }
-          />
+      <div className="bg-slate-100/70 rounded-xl border border-slate-200/80 shadow-xs overflow-x-auto w-full">
+        <div className="w-fit min-w-full p-2 sm:p-6 flex justify-center">
+          <div className="w-[760px] shrink-0">
+            <OfficialBillDocument
+              ref={docRef}
+              bill={{
+                bill_reference_id: 'CS-2026-DRAFT',
+                billing_method: activeMethod,
+                month_year: draft.month_year,
+                hod_name: draft.hod_name,
+                grand_total: draft.grand_total,
+                amount_in_words: draft.amount_in_words,
+                submission_date: new Date().toISOString(),
+                status: 'DRAFT',
+                answer_book_items: activeMethod === 'ANSWER_BOOK_ASSESSMENT' ? draft.items : [],
+                practical_items:   activeMethod === 'PRACTICAL_ASSESSMENT'   ? draft.items : [],
+                online_items:      activeMethod === 'ONLINE_EXAMINATION_NEP' ? draft.items : [],
+              }}
+              faculty={faculty}
+              classItem={{ name: draft.class_name || 'SYCS' }}
+              semester={{
+                roman_label: draft.semester_label,
+                session_type: draft.session_type,
+              }}
+              academicYear={{ year_label: draft.academic_year_label }}
+              items={draft.items}
+              approvals={
+                faculty?.signature_path
+                  ? [
+                      {
+                        action: 'SUBMITTED',
+                        signature_snapshot_path: faculty.signature_path,
+                        created_at: new Date().toISOString(),
+                      },
+                    ]
+                  : []
+              }
+            />
+          </div>
         </div>
       </div>
 

@@ -60,17 +60,13 @@ export const HodPendingBills = () => {
       {/* Header - Clean title without top badge */}
       <div className="space-y-1">
         <h1 className="text-3xl font-semibold text-slate-900 tracking-tight">Pending Verification</h1>
-        <p className="text-xs sm:text-sm text-slate-500">
-          Faculty remuneration claims awaiting Head of Department endorsement and signature verification.
-        </p>
+        
       </div>
 
       {/* Filter Bar */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 p-4 rounded-xl bg-white/80 backdrop-blur-md border border-slate-200/80 shadow-2xs">
         <div>
-          <label className="block text-[10px] font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
-            Search
-          </label>
+          
           <div className="relative">
             <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-2.5" />
             <input
@@ -84,9 +80,7 @@ export const HodPendingBills = () => {
         </div>
 
         <div>
-          <label className="block text-[10px] font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
-            Academic Year
-          </label>
+         
           <select
             value={yearFilter}
             onChange={(e) => setYearFilter(e.target.value)}
@@ -102,9 +96,7 @@ export const HodPendingBills = () => {
         </div>
 
         <div>
-          <label className="block text-[10px] font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
-            Semester
-          </label>
+          
           <select
             value={semesterFilter}
             onChange={(e) => setSemesterFilter(e.target.value)}
@@ -143,8 +135,8 @@ export const HodPendingBills = () => {
                   <th className="py-3.5 px-4">Faculty</th>
                   <th className="py-3.5 px-4">Semester</th>
                   <th className="py-3.5 px-4 text-right">Amount</th>
-                  <th className="py-3.5 px-4">Submitted</th>
-                  <th className="py-3.5 px-4 text-right">Action</th>
+                  <th className="py-3.5 px-4 text-right">Submitted</th>
+                  <th className="py-3.5 px-4 text-center">Action</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
@@ -157,7 +149,7 @@ export const HodPendingBills = () => {
                     <td className="py-3.5 px-4 text-right font-mono font-semibold text-slate-900">
                       {formatCurrency(b.grand_total)}
                     </td>
-                    <td className="py-3.5 px-4 text-slate-400">
+                    <td className="py-3.5 px-4 text-right text-slate-400">
                       {b.submission_date ? new Date(b.submission_date).toLocaleDateString() : '—'}
                     </td>
                     <td className="py-3.5 px-4 text-right">

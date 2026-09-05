@@ -37,7 +37,7 @@ export const OfficialBillViewPage = () => {
       setIsDownloading(true);
       await downloadOfficialBillPdf(
         docRef.current,
-        `Official-Bill-${bill.bill_reference_id || id}.pdf`
+        `Bill-${bill.bill_reference_id || id}.pdf`
       );
     } catch (err) {
       console.error('PDF export failed', err);
@@ -77,8 +77,7 @@ export const OfficialBillViewPage = () => {
         <div>
           <h2 className="text-base font-semibold text-slate-900">Official Bill Document</h2>
           <p className="text-xs text-slate-500">
-            Reference: <strong className="font-mono text-slate-800">{bill.bill_reference_id}</strong>
-            &nbsp;• B.K. Birla College Examination Form
+            Reference: <strong className="font-mono text-indigo-800">{bill.bill_reference_id}</strong>
           </p>
         </div>
 
@@ -116,18 +115,24 @@ export const OfficialBillViewPage = () => {
         The .print-area class on OfficialBillDocument makes it visible during print.
         The action bar above has .no-print so it's hidden; this div renders cleanly.
       */}
-      <div className="bg-slate-100/70 p-2 sm:p-6 rounded-xl border border-slate-200/80 shadow-xs overflow-x-auto w-full flex justify-center">
-        <div className="min-w-[680px] flex justify-center mx-auto">
-          <OfficialBillDocument
-            ref={docRef}
-            bill={bill}
-            faculty={bill.faculty}
-            classItem={bill.class}
-            semester={bill.semester}
-            academicYear={bill.academic_year}
-            items={bill.items || []}
-            approvals={bill.approvals || []}
-          />
+      <div className="bg-slate-100/70 rounded-xl border border-slate-200/80 shadow-xs overflow-x-auto w-full">
+        <div className="w-fit min-w-full p-2 sm:p-6 flex justify-center">
+          <div className="w-[760px] shrink-0">
+            <OfficialBillDocument
+              ref={docRef}
+              bill={bill}
+              faculty={bill.faculty}
+              classItem={bill.class}
+              semester={bill.semester}
+              academicYear={bill.academic_year}
+              items={
+                (bill.items && bill.items.length > 0)
+                  ? bill.items
+                  : (bill.practical_items || bill.answer_book_items || bill.online_items || [])
+              }
+              approvals={bill.approvals || []}
+            />
+          </div>
         </div>
       </div>
 

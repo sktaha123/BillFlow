@@ -60,17 +60,12 @@ export const HeadPendingBills = () => {
       {/* Header - Clean title without top badge */}
       <div className="space-y-1">
         <h1 className="text-3xl font-semibold text-slate-900 tracking-tight">Pending Sanctions</h1>
-        <p className="text-xs sm:text-sm text-slate-500">
-          Bills verified by HOD awaiting executive approval and remuneration disbursal authorization.
-        </p>
+      
       </div>
 
       {/* Filter Bar */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 p-4 rounded-xl bg-white/80 backdrop-blur-md border border-slate-200/80 shadow-2xs">
         <div>
-          <label className="block text-[10px] font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
-            Search
-          </label>
           <div className="relative">
             <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-2.5" />
             <input
@@ -84,9 +79,7 @@ export const HeadPendingBills = () => {
         </div>
 
         <div>
-          <label className="block text-[10px] font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
-            Academic Year
-          </label>
+          
           <select
             value={yearFilter}
             onChange={(e) => setYearFilter(e.target.value)}
@@ -102,9 +95,7 @@ export const HeadPendingBills = () => {
         </div>
 
         <div>
-          <label className="block text-[10px] font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
-            Semester
-          </label>
+          
           <select
             value={semesterFilter}
             onChange={(e) => setSemesterFilter(e.target.value)}
@@ -122,8 +113,8 @@ export const HeadPendingBills = () => {
 
       {/* Subtitle Counter */}
       <div className="flex items-center gap-2 text-xs font-medium text-slate-600">
-        <Clock className="w-4 h-4 text-indigo-500" />
-        <span>{filteredBills.length} {filteredBills.length === 1 ? 'bill requires' : 'bills require'} final sanction</span>
+        
+        <span>{filteredBills.length} {filteredBills.length === 1 ? 'bill awaiting' : 'bills awaiting'}</span>
       </div>
 
       {/* Table */}
@@ -143,8 +134,8 @@ export const HeadPendingBills = () => {
                   <th className="py-3.5 px-4">Faculty</th>
                   <th className="py-3.5 px-4">Semester</th>
                   <th className="py-3.5 px-4 text-right">Amount</th>
-                  <th className="py-3.5 px-4">HOD Endorsed</th>
-                  <th className="py-3.5 px-4 text-right">Action</th>
+                  <th className="py-3.5 px-4 text-right">HOD Endorsed</th>
+                  <th className="py-3.5 px-4 text-center">Action</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
@@ -159,7 +150,7 @@ export const HeadPendingBills = () => {
                       <td className="py-3.5 px-4 text-right font-mono font-semibold text-slate-900">
                         {formatCurrency(b.grand_total)}
                       </td>
-                      <td className="py-3.5 px-4 text-slate-400">
+                      <td className="py-3.5 px-4 text-right text-slate-400">
                         {hodApproval ? new Date(hodApproval.created_at).toLocaleDateString() : 'Yes'}
                       </td>
                       <td className="py-3.5 px-4 text-right">

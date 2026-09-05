@@ -1,7 +1,14 @@
 import React, { useState } from 'react';
-import { Eye, Edit3, ShieldCheck, PenTool } from 'lucide-react';
-import { calculateBillCategoryTotals, formatCurrency } from '@/lib/calculations';
+import { Eye, Edit3, ShieldCheck } from 'lucide-react';
+import { calculateBillCategoryTotals, calculateGenericGrandTotal, formatCurrency } from '@/lib/calculations';
 import { SignatureModal } from '@/components/signature/SignatureModal';
+
+const METHOD_LABELS = {
+  PAPER_SETTING: 'Paper Setting',
+  ANSWER_BOOK_ASSESSMENT: 'Answer Book / Moderation',
+  PRACTICAL_ASSESSMENT: 'Practical Assessment',
+  ONLINE_EXAMINATION_NEP: 'Online Examination (NEP)',
+};
 
 export const Step5ReviewBill = ({
   draft,
@@ -12,10 +19,20 @@ export const Step5ReviewBill = ({
   onBack,
 }) => {
   const [isSignatureModalOpen, setIsSignatureModalOpen] = useState(false);
-  const { totalSetting, totalTranslation, totalProof, grandTotal, amountInWords } = calculateBillCategoryTotals(draft.items);
+  const method = draft.billing_method || 'PAPER_SETTING';
+
+  let grandTotal = 0;
+  let categoryTotals = null;
+
+  if (method === 'PAPER_SETTING') {
+    categoryTotals = calculateBillCategoryTotals(draft.items);
+    grandTotal = categoryTotals.grandTotal;
+  } else {
+    const generic = calculateGenericGrandTotal(draft.items);
+    grandTotal = generic.grandTotal;
+  }
 
   const handleProceed = () => {
-    // If faculty has not registered/drawn their signature yet, prompt them first
     if (!faculty?.signature_path) {
       setIsSignatureModalOpen(true);
       return;
@@ -37,27 +54,20 @@ export const Step5ReviewBill = ({
       {/* Header */}
       <div className="space-y-1 text-center sm:text-left">
         <h2 className="text-2xl sm:text-3xl font-semibold tracking-tight text-slate-900">
-          Review &amp; Verify Bill
+          Step 5: Review &amp; Verify Bill
         </h2>
         <p className="text-xs sm:text-sm text-slate-500 leading-relaxed">
           Please verify all information and remuneration amounts before generating the official document preview.
         </p>
       </div>
 
-      {/* Verification notice card */}
-      <div className="p-4 rounded-xl bg-slate-50 border border-slate-200/80 flex items-start gap-3.5 text-xs">
-        <ShieldCheck className="w-5 h-5 text-indigo-500 shrink-0 mt-0.5" />
-        <div className="space-y-0.5">
-          <p className="font-semibold text-slate-900">Digital Verification Notice</p>
-          <p className="text-slate-500 leading-relaxed">
-            Upon confirmation, your immutable digital signature snapshot will be attached and forwarded directly to the Head of Department.
-          </p>
-        </div>
-      </div>
+      {/* Verification Notice Card */}
+      
 
       {/* 1. Bill Information Block */}
       <div className="bg-white/90 backdrop-blur-md border border-slate-200/80 rounded-xl p-6 space-y-4 shadow-2xs">
         
+
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
           <div className="p-3 bg-slate-50/70 rounded-xl border border-slate-200/60">
             <span className="text-slate-400 block text-[10px] uppercase font-semibold">Faculty Name</span>
@@ -78,11 +88,11 @@ export const Step5ReviewBill = ({
         </div>
       </div>
 
-      {/* 2. Paper Items Summary */}
+      {/* 2. Items Summary */}
       <div className="bg-white/90 backdrop-blur-md border border-slate-200/80 rounded-xl p-6 space-y-4 shadow-2xs">
         <div className="flex items-center justify-between">
           <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-400">
-            Paper Courses ({draft.items.length})
+            Subject Items ({draft.items.length})
           </h3>
           <button
             onClick={onEditBill}
@@ -99,9 +109,10 @@ export const Step5ReviewBill = ({
               <div>
                 <p className="font-semibold text-slate-900 text-sm">{it.subject?.name || it.subject_name}</p>
                 <p className="text-[11px] text-slate-500 mt-0.5">
-                  {it.paper_type} &nbsp; {it.paper_sets} Sets
-                  {it.translation_sets > 0 ? ` • ${it.translation_sets} Translation` : ''}
-                  {it.proof_papers > 0 ? ` • ${it.proof_papers} Proof` : ''}
+                  {method === 'ANSWER_BOOK_ASSESSMENT' && `Level: ${it.academic_level || 'UG'} , Sem End: ${it.semester_end_books || 0} , ATKT: ${it.atkt_books || 0} , Int: ${it.internal_books || 0}`}
+                  {method === 'PRACTICAL_ASSESSMENT' && `Level: ${it.academic_level || 'UG'} ,  Candidates: ${it.practical_books || 0}`}
+                  {method === 'ONLINE_EXAMINATION_NEP' && `Class: ${it.class_name || 'FYCS'} ,  MCQs: ${it.mcq_count || 0} • Students: ${it.student_count || 0}`}
+                  {method === 'PAPER_SETTING' && `${it.paper_type} ,  ${it.paper_sets} Sets ${it.translation_sets > 0 ? `• ${it.translation_sets} Trans` : ''} ${it.proof_papers > 0 ? `• ${it.proof_papers} Proof` : ''}`}
                 </p>
               </div>
               <span className="font-mono font-semibold text-slate-900 text-sm">{formatCurrency(it.subtotal)}</span>
@@ -110,29 +121,30 @@ export const Step5ReviewBill = ({
         </div>
       </div>
 
-      {/* 3. Cost Breakdown & Amount in Words */}
+      {/* 3. Cost Summary & Total */}
       <div className="bg-white/90 backdrop-blur-md border border-slate-200/80 rounded-xl p-6 space-y-4 shadow-2xs">
-        
         <div className="space-y-2 text-xs text-slate-600">
-          <div className="flex justify-between py-1 border-b border-slate-100">
-            <span>Paper Setting Total</span>
-            <span className="font-mono font-medium text-slate-900">{formatCurrency(totalSetting)}</span>
-          </div>
-          <div className="flex justify-between py-1 border-b border-slate-100">
-            <span>Translation Total</span>
-            <span className="font-mono font-medium text-slate-900">{formatCurrency(totalTranslation)}</span>
-          </div>
-          <div className="flex justify-between py-1 border-b border-slate-100">
-            <span>Proof Checking Total</span>
-            <span className="font-mono font-medium text-slate-900">{formatCurrency(totalProof)}</span>
-          </div>
-          
+          {method === 'PAPER_SETTING' && categoryTotals && (
+            <>
+              <div className="flex justify-between py-1 border-b border-slate-100">
+                <span>Paper Setting Total</span>
+                <span className="font-mono font-medium text-slate-900">{formatCurrency(categoryTotals.totalSetting)}</span>
+              </div>
+              <div className="flex justify-between py-1 border-b border-slate-100">
+                <span>Translation Total</span>
+                <span className="font-mono font-medium text-slate-900">{formatCurrency(categoryTotals.totalTranslation)}</span>
+              </div>
+              <div className="flex justify-between py-1 border-b border-slate-100">
+                <span>Proof Checking Total</span>
+                <span className="font-mono font-medium text-slate-900">{formatCurrency(categoryTotals.totalProof)}</span>
+              </div>
+            </>
+          )}
+
           <div className="flex justify-between pt-3 text-base font-semibold text-slate-900">
-            <span>Grand Total Payable</span>
+            <span>Grand Total Remuneration</span>
             <span className="font-mono text-xl font-bold">{formatCurrency(grandTotal)}</span>
           </div>
-
-         
         </div>
       </div>
 

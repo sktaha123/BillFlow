@@ -5,15 +5,21 @@ import { dataService } from '@/lib/supabase';
 import { Modal } from '@/components/ui/Modal';
 import { Textarea } from '@/components/ui/Textarea';
 import { SignatureModal } from '@/components/signature/SignatureModal';
-import { calculateBillCategoryTotals, formatCurrency } from '@/lib/calculations';
+import { formatCurrency } from '@/lib/calculations';
 import { 
   ChevronLeft, 
   CheckCircle2, 
   XCircle, 
   FileText, 
-  Award,
-  ShieldCheck 
+  Award 
 } from 'lucide-react';
+
+const METHOD_LABELS = {
+  PAPER_SETTING: 'Paper Setting',
+  ANSWER_BOOK_ASSESSMENT: 'Answer Book / Moderation',
+  PRACTICAL_ASSESSMENT: 'Practical Assessment',
+  ONLINE_EXAMINATION_NEP: 'Online Examination (NEP)',
+};
 
 export const HeadBillReview = () => {
   const { id } = useParams();
@@ -66,13 +72,12 @@ export const HeadBillReview = () => {
     );
   }
 
-  const { totalSetting, totalTranslation, totalProof, grandTotal, amountInWords } = calculateBillCategoryTotals(bill.items || []);
-
+  const method = bill.billing_method || 'PAPER_SETTING';
   const facultyApproval = bill.approvals?.find((a) => a.action === 'SUBMITTED');
-  const hodApproval = bill.approvals?.find((a) => a.action === 'APPROVED');
+  const hodApproval     = bill.approvals?.find((a) => a.action === 'APPROVED');
 
   const facultySignature = facultyApproval?.signature_snapshot_path || bill.faculty?.signature_path;
-  const hodSignature = hodApproval?.signature_snapshot_path;
+  const hodSignature     = hodApproval?.signature_snapshot_path;
 
   const handleFinalize = async () => {
     if (!user?.signature_path) {
@@ -149,6 +154,16 @@ export const HeadBillReview = () => {
       <div className="bg-white/90 backdrop-blur-md border border-slate-200/80 rounded-xl p-6 sm:p-7 space-y-5 shadow-[0_4px_24px_-4px_rgba(15,23,42,0.04)]">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-5 border-b border-slate-100">
           <div>
+            <div className="flex items-center gap-2 mb-1 flex-wrap">
+              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-slate-100 text-slate-700 border border-slate-200">
+                {METHOD_LABELS[method] || method}
+              </span>
+              {bill.month_year && (
+                <span className="text-xs font-medium text-slate-600 bg-slate-50 px-2 py-0.5 rounded-md border border-slate-200/60">
+                  Exam Period: <strong>{bill.month_year}</strong>
+                </span>
+              )}
+            </div>
             <h1 className="text-2xl sm:text-3xl font-semibold font-mono text-slate-900">{bill.bill_reference_id}</h1>
           </div>
 
@@ -174,7 +189,9 @@ export const HeadBillReview = () => {
           </div>
           <div className="bg-slate-50/70 p-3.5 rounded-xl border border-slate-200/60">
             <span className="text-slate-400 block text-[10px] uppercase font-semibold">Class &amp; Semester</span>
-            <span className="font-semibold text-slate-900 text-sm mt-0.5 block">{bill.class?.name || 'TYCS'} • Sem {bill.semester?.roman_label}</span>
+            <span className="font-semibold text-slate-900 text-sm mt-0.5 block">
+              {bill.class?.name ? `${bill.class.name} • ` : ''}Sem {bill.semester?.roman_label || bill.semester?.semester_number}
+            </span>
           </div>
           <div className="bg-slate-50/70 p-3.5 rounded-xl border border-slate-200/60">
             <span className="text-slate-400 block text-[10px] uppercase font-semibold">Academic Year</span>
@@ -183,45 +200,132 @@ export const HeadBillReview = () => {
         </div>
       </div>
 
-      {/* Paper Breakdown */}
+      {/* Item Breakdown Table */}
       <div className="space-y-3">
         <h3 className="text-base font-semibold text-slate-900 tracking-tight">
-          Paper Sets &amp; Claims
+          Bill Items Breakdown
         </h3>
         <div className="bg-white/90 backdrop-blur-md border border-slate-200/80 rounded-xl overflow-hidden shadow-2xs">
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[580px] text-xs text-left">
-            <thead className="bg-slate-50/80 border-b border-slate-200/80 text-slate-500 font-semibold uppercase tracking-wider text-[10px]">
-              <tr>
-                <th className="py-3.5 px-4 w-12 text-center">Sr</th>
-                <th className="py-3.5 px-4">Subject</th>
-                <th className="py-3.5 px-4">Type</th>
-                <th className="py-3.5 px-4 text-center">Sets</th>
-                <th className="py-3.5 px-4 text-right">Setting</th>
-                <th className="py-3.5 px-4 text-right">Translation</th>
-                <th className="py-3.5 px-4 text-right">Proof</th>
-                <th className="py-3.5 px-4 text-right">Subtotal</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100">
-              {bill.items?.map((item, idx) => (
-                <tr key={idx} className="hover:bg-slate-50/60 transition-colors">
-                  <td className="py-3.5 px-4 text-center font-mono text-slate-400">{String(idx + 1).padStart(2, '0')}</td>
-                  <td className="py-3.5 px-4 font-semibold text-slate-900">{item.subject?.name || item.subject_name}</td>
-                  <td className="py-3.5 px-4">
-                    <span className="inline-block px-2.5 py-0.5 rounded-full text-[9px] font-semibold uppercase tracking-wider bg-slate-100 text-slate-700">
-                      {item.paper_type}
-                    </span>
-                  </td>
-                  <td className="py-3.5 px-4 text-center font-mono font-medium text-slate-700">{item.paper_sets}</td>
-                  <td className="py-3.5 px-4 text-right font-mono text-slate-600">{formatCurrency(item.setting_amount)}</td>
-                  <td className="py-3.5 px-4 text-right font-mono text-slate-600">{formatCurrency(item.translation_amount)}</td>
-                  <td className="py-3.5 px-4 text-right font-mono text-slate-600">{formatCurrency(item.proof_amount)}</td>
-                  <td className="py-3.5 px-4 text-right font-mono font-semibold text-slate-900">{formatCurrency(item.subtotal)}</td>
-                </tr>
-              ))}
-            </tbody>
-            </table>
+            {method === 'ANSWER_BOOK_ASSESSMENT' && (
+              <table className="w-full min-w-[580px] text-xs text-left">
+                <thead className="bg-slate-50/80 border-b border-slate-200/80 text-slate-500 font-semibold uppercase tracking-wider text-[10px]">
+                  <tr>
+                    <th className="py-3.5 px-4 w-12 text-center">Sr</th>
+                    <th className="py-3.5 px-4">Subject</th>
+                    <th className="py-3.5 px-4 text-center">Level</th>
+                    <th className="py-3.5 px-4 text-center">Sem End Books</th>
+                    <th className="py-3.5 px-4 text-center">ATKT Books</th>
+                    <th className="py-3.5 px-4 text-center">Internal Books</th>
+                    <th className="py-3.5 px-4 text-right">Subtotal</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {(bill.answer_book_items && bill.answer_book_items.length > 0 ? bill.answer_book_items : (bill.items || [])).map((item, idx) => (
+                    <tr key={idx} className="hover:bg-slate-50/60 transition-colors">
+                      <td className="py-3.5 px-4 text-center font-mono text-slate-400">{String(idx + 1).padStart(2, '0')}</td>
+                      <td className="py-3.5 px-4 font-semibold text-slate-900">{item.subject?.name || item.subject_name}</td>
+                      <td className="py-3.5 px-4 text-center font-semibold">{item.level || item.academic_level || 'UG'}</td>
+                      <td className="py-3.5 px-4 text-center font-mono">{item.semester_end_books || 0}</td>
+                      <td className="py-3.5 px-4 text-center font-mono">{item.atkt_books || 0}</td>
+                      <td className="py-3.5 px-4 text-center font-mono">{item.internal_books || 0}</td>
+                      <td className="py-3.5 px-4 text-right font-mono font-semibold text-slate-900">{formatCurrency(item.subtotal)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+
+            {method === 'PRACTICAL_ASSESSMENT' && (
+              <table className="w-full min-w-[580px] text-xs text-left">
+                <thead className="bg-slate-50/80 border-b border-slate-200/80 text-slate-500 font-semibold uppercase tracking-wider text-[10px]">
+                  <tr>
+                    <th className="py-3.5 px-4 w-12 text-center">Sr</th>
+                    <th className="py-3.5 px-4">Subject</th>
+                    <th className="py-3.5 px-4 text-center">Level</th>
+                    <th className="py-3.5 px-4 text-center">Candidates</th>
+                    <th className="py-3.5 px-4 text-right">Rate / Student</th>
+                    <th className="py-3.5 px-4 text-right">Subtotal</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {(bill.practical_items && bill.practical_items.length > 0 ? bill.practical_items : (bill.items || [])).map((item, idx) => (
+                    <tr key={idx} className="hover:bg-slate-50/60 transition-colors">
+                      <td className="py-3.5 px-4 text-center font-mono text-slate-400">{String(idx + 1).padStart(2, '0')}</td>
+                      <td className="py-3.5 px-4 font-semibold text-slate-900">{item.subject?.name || item.subject_name}</td>
+                      <td className="py-3.5 px-4 text-center font-semibold">{item.level || item.academic_level || 'UG'}</td>
+                      <td className="py-3.5 px-4 text-center font-mono font-medium">{item.practical_books || 0}</td>
+                      <td className="py-3.5 px-4 text-right font-mono text-slate-600">{formatCurrency(item.practical_rate || 25)}</td>
+                      <td className="py-3.5 px-4 text-right font-mono font-semibold text-slate-900">{formatCurrency(item.subtotal)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+
+            {method === 'ONLINE_EXAMINATION_NEP' && (
+              <table className="w-full min-w-[580px] text-xs text-left">
+                <thead className="bg-slate-50/80 border-b border-slate-200/80 text-slate-500 font-semibold uppercase tracking-wider text-[10px]">
+                  <tr>
+                    <th className="py-3.5 px-4 w-12 text-center">Sr</th>
+                    <th className="py-3.5 px-4">Subject</th>
+                    <th className="py-3.5 px-4 text-center">Class</th>
+                    <th className="py-3.5 px-4 text-center">MCQs</th>
+                    <th className="py-3.5 px-4 text-center">Students</th>
+                    <th className="py-3.5 px-4 text-right">Upload Fee</th>
+                    <th className="py-3.5 px-4 text-right">Subtotal</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {(bill.online_items && bill.online_items.length > 0 ? bill.online_items : (bill.items || [])).map((item, idx) => (
+                    <tr key={idx} className="hover:bg-slate-50/60 transition-colors">
+                      <td className="py-3.5 px-4 text-center font-mono text-slate-400">{String(idx + 1).padStart(2, '0')}</td>
+                      <td className="py-3.5 px-4 font-semibold text-slate-900">{item.subject?.name || item.subject_name}</td>
+                      <td className="py-3.5 px-4 text-center">{item.class?.name || item.class_name || bill.class?.name || '—'}</td>
+                      <td className="py-3.5 px-4 text-center font-mono">{item.mcq_count || 0}</td>
+                      <td className="py-3.5 px-4 text-center font-mono">{item.student_count || 0}</td>
+                      <td className="py-3.5 px-4 text-right font-mono text-slate-600">{formatCurrency(item.upload_amount)}</td>
+                      <td className="py-3.5 px-4 text-right font-mono font-semibold text-slate-900">{formatCurrency(item.subtotal)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+
+            {method === 'PAPER_SETTING' && (
+              <table className="w-full min-w-[580px] text-xs text-left">
+                <thead className="bg-slate-50/80 border-b border-slate-200/80 text-slate-500 font-semibold uppercase tracking-wider text-[10px]">
+                  <tr>
+                    <th className="py-3.5 px-4 w-12 text-center">Sr</th>
+                    <th className="py-3.5 px-4">Subject</th>
+                    <th className="py-3.5 px-4">Type</th>
+                    <th className="py-3.5 px-4 text-center">Sets</th>
+                    <th className="py-3.5 px-4 text-right">Setting</th>
+                    <th className="py-3.5 px-4 text-right">Translation</th>
+                    <th className="py-3.5 px-4 text-right">Proof</th>
+                    <th className="py-3.5 px-4 text-right">Subtotal</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {bill.items?.map((item, idx) => (
+                    <tr key={idx} className="hover:bg-slate-50/60 transition-colors">
+                      <td className="py-3.5 px-4 text-center font-mono text-slate-400">{String(idx + 1).padStart(2, '0')}</td>
+                      <td className="py-3.5 px-4 font-semibold text-slate-900">{item.subject?.name || item.subject_name}</td>
+                      <td className="py-3.5 px-4">
+                        <span className="inline-block px-2.5 py-0.5 rounded-full text-[9px] font-semibold uppercase tracking-wider bg-slate-100 text-slate-700">
+                          {item.paper_type}
+                        </span>
+                      </td>
+                      <td className="py-3.5 px-4 text-center font-mono font-medium text-slate-700">{item.paper_sets}</td>
+                      <td className="py-3.5 px-4 text-right font-mono text-slate-600">{formatCurrency(item.setting_amount)}</td>
+                      <td className="py-3.5 px-4 text-right font-mono text-slate-600">{formatCurrency(item.translation_amount)}</td>
+                      <td className="py-3.5 px-4 text-right font-mono text-slate-600">{formatCurrency(item.proof_amount)}</td>
+                      <td className="py-3.5 px-4 text-right font-mono font-semibold text-slate-900">{formatCurrency(item.subtotal)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
           </div>
         </div>
       </div>
@@ -286,12 +390,14 @@ export const HeadBillReview = () => {
         <div className="space-y-2 text-xs text-slate-600">
           <div className="flex justify-between text-base font-semibold text-slate-900">
             <span>Total Sanction Amount Payable</span>
-            <span className="font-mono text-2xl font-bold">{formatCurrency(grandTotal)}</span>
+            <span className="font-mono text-2xl font-bold">{formatCurrency(bill.grand_total)}</span>
           </div>
-          <div className="pt-2 text-[11px] bg-slate-50 p-3.5 rounded-xl border border-slate-200/60 mt-2">
-            <span className="font-medium text-slate-400 uppercase tracking-wide block text-[10px]">In Words</span>
-            <span className="font-semibold text-slate-800 text-xs mt-0.5 block italic">{amountInWords}</span>
-          </div>
+          {bill.amount_in_words && (
+            <div className="pt-2 text-[11px] bg-slate-50 p-3.5 rounded-xl border border-slate-200/60 mt-2">
+              <span className="font-medium text-slate-400 uppercase tracking-wide block text-[10px]">In Words</span>
+              <span className="font-semibold text-slate-800 text-xs mt-0.5 block italic">{bill.amount_in_words}</span>
+            </div>
+          )}
         </div>
       </div>
 
@@ -325,7 +431,7 @@ export const HeadBillReview = () => {
       <Modal
         isOpen={isRejectModalOpen}
         onClose={() => setIsRejectModalOpen(false)}
-        title="Reject Paper Setting Bill"
+        title="Reject Bill"
       >
         <div className="space-y-4">
           <p className="text-xs text-slate-600 leading-relaxed">
@@ -334,7 +440,7 @@ export const HeadBillReview = () => {
 
           <Textarea
             label="Rejection Reason"
-            placeholder="e.g. Rate discrepancy or revision required."
+            placeholder="e.g. Discrepancy in calculations or documentation."
             rows={4}
             value={rejectionReason}
             onChange={(e) => setRejectionReason(e.target.value)}
