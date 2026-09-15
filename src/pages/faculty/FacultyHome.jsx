@@ -38,7 +38,7 @@ export const FacultyHome = () => {
   const displayName = user?.name || 'Prof. Hemangi Adhiraj';
 
   return (
-    <div className="space-y-8 max-w-5xl mx-auto animate-in fade-in duration-200">
+    <div className="space-y-8 max-w-7xl mx-auto animate-in fade-in duration-200">
       
       {/* 1. HERO HEADER */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">

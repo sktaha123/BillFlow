@@ -71,7 +71,7 @@ export const Step1Semester = ({
   };
 
   return (
-    <div className="max-w-3xl mx-auto space-y-6 animate-in fade-in duration-200">
+    <div className="max-w-4xl mx-auto space-y-6 animate-in fade-in duration-200">
       
       {/* Step Heading */}
       <div className="space-y-1 text-center sm:text-left">

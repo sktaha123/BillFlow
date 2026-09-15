@@ -64,14 +64,14 @@ export const MyBillsPage = () => {
   });
 
   return (
-    <div className="space-y-6 max-w-5xl mx-auto animate-in fade-in duration-200">
+    <div className="space-y-6 max-w-7xl mx-auto animate-in fade-in duration-200">
       
       {/* Header - Clean title without top badge */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="space-y-1">
-          <h1 className="text-3xl font-normal text-slate-900 tracking-tight">My  Bills</h1>
+          <h1 className="text-3xl font-normal text-slate-900 tracking-tight">My Bills</h1>
           <p className="text-xs sm:text-sm text-slate-500">
-            View, track, and print all your semester paper-setting remuneration claims.
+            View, track, and print all your remuneration claims.
           </p>
         </div>
 

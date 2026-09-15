@@ -12,7 +12,7 @@ const STEPS = [
 
 export const StepIndicator = ({ currentStep }) => {
   return (
-    <div className="w-full max-w-3xl mx-auto mb-8 bg-white/85 backdrop-blur-md border border-slate-200/80 rounded-xl p-4 sm:p-5 shadow-2xs">
+    <div className="w-full max-w-4xl mx-auto mb-8 bg-white/85 backdrop-blur-md border border-slate-200/80 rounded-xl p-4 sm:p-5 shadow-2xs">
       <div className="flex items-center justify-between relative">
         
         {/* Background connecting bar */}
