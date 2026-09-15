@@ -167,6 +167,22 @@
     display: block !important;
   }
 
+  /* Reset the bill preview wrapper containers */
+  .bill-canvas-wrapper,
+  .bill-canvas-wrapper > *,
+  [class*="overflow-x-auto"],
+  [class*="w-fit"] {
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow: visible !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    display: block !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+
   /* The actual document — render cleanly on A4 */
   .print-area {
     display: block !important;
@@ -194,6 +210,6 @@
 
   @page {
     size: A4 portrait;
-    margin: 8mm 8mm 8mm 8mm;
+    margin: 10mm;
   }
 }

@@ -85,30 +85,30 @@ export const OfficialBillDocument = React.forwardRef(({
   // ── PAPER SETTING DEFAULT BILL LAYOUT ──
   const appList = Array.isArray(approvals) ? approvals : (bill?.approvals || []);
   const facultyApproval = appList.find((a) => a && a.action === 'SUBMITTED');
-  const hodApproval    = appList.find((a) => a && a.action === 'APPROVED');
-  const headApproval   = appList.find((a) => a && a.action === 'FINALIZED');
+  const hodApproval = appList.find((a) => a && a.action === 'APPROVED');
+  const headApproval = appList.find((a) => a && a.action === 'FINALIZED');
 
   const facultySignature = facultyApproval?.signature_snapshot_path || faculty?.signature_path || bill?.faculty?.signature_path;
-  const hodSignature     = hodApproval?.signature_snapshot_path;
-  const headSignature    = headApproval?.signature_snapshot_path;
+  const hodSignature = hodApproval?.signature_snapshot_path;
+  const headSignature = headApproval?.signature_snapshot_path;
 
-  let totalSetting     = 0;
+  let totalSetting = 0;
   let totalTranslation = 0;
-  let totalProof       = 0;
+  let totalProof = 0;
 
   const itemList = Array.isArray(items) && items.length > 0 ? items : (bill?.items || []);
 
   itemList.forEach((item) => {
     if (item) {
-      totalSetting     += Number(item.setting_amount)     || 0;
+      totalSetting += Number(item.setting_amount) || 0;
       totalTranslation += Number(item.translation_amount) || 0;
-      totalProof       += Number(item.proof_amount)       || 0;
+      totalProof += Number(item.proof_amount) || 0;
     }
   });
 
-  const grandTotal    = Number(bill?.grand_total) || (totalSetting + totalTranslation + totalProof);
+  const grandTotal = Number(bill?.grand_total) || (totalSetting + totalTranslation + totalProof);
 
-  const billDate     = bill?.submission_date ? new Date(bill.submission_date) : new Date();
+  const billDate = bill?.submission_date ? new Date(bill.submission_date) : new Date();
   const defaultMonthYear = !isNaN(billDate.getTime()) ? billDate.toLocaleDateString('en-IN', { month: 'long', year: 'numeric' }) : new Date().toLocaleDateString('en-IN', { month: 'long', year: 'numeric' });
   const monthYearStr = bill?.month_year || defaultMonthYear;
 
@@ -119,8 +119,19 @@ export const OfficialBillDocument = React.forwardRef(({
     .trim();
   if (!cleanSession) cleanSession = 'Winter Session / Summer Session';
 
-  const hodName  = hodApproval?.user?.name || hodApproval?.user_name || bill?.hod_name || 'Prof. Vinod Rajput';
+  const hodName = hodApproval?.user?.name || hodApproval?.user_name || bill?.hod_name || 'Prof. Vinod Rajput';
   const headName = headApproval?.user?.name || headApproval?.user_name || 'Prof. Esmita Gupta';
+  const facultyName = mergedFaculty?.full_name || mergedFaculty?.name || bill?.faculty?.full_name || bill?.faculty?.name || '';
+
+  const examModeLabel = (type) => {
+    switch (String(type || '').toUpperCase()) {
+      case 'THEORY': return 'Theory';
+      case 'PRACTICAL': return 'Practical';
+      case 'ASSESSMENT': return 'Assessment';
+      case 'OE': return 'OE';
+      default: return type || '';
+    }
+  };
 
   const headerCell = (extra = {}) => ({
     border: BORDER,
@@ -157,14 +168,12 @@ export const OfficialBillDocument = React.forwardRef(({
       className="print-area bg-white text-black"
       style={{
         fontFamily: "'Times New Roman', Times, serif",
-        fontSize: '11.5px',
+        fontSize: '11px',
         color: '#000000',
         backgroundColor: '#ffffff',
         width: '100%',
-        minWidth: '680px',
-        maxWidth: '760px',
         margin: '0 auto',
-        padding: '12px 16px',
+        padding: '6px 8px',
         boxSizing: 'border-box',
       }}
     >
@@ -181,7 +190,7 @@ export const OfficialBillDocument = React.forwardRef(({
           UG / PG - Semester End Examinations ({cleanSession})
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', borderBottom: BORDER, fontSize: '11px', alignItems: 'center' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr  1fr', borderBottom: BORDER, fontSize: '11px', alignItems: 'center' }}>
           <div style={{ padding: '4px 8px', borderRight: BORDER }}>
             <strong>Semester :</strong>{' '}
             {['I', 'II', 'III', 'IV', 'V', 'VI'].map((r, i) => (
@@ -195,15 +204,21 @@ export const OfficialBillDocument = React.forwardRef(({
           </div>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', borderBottom: BORDER, fontSize: '11px', alignItems: 'center' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', borderBottom: BORDER, fontSize: '11px', alignItems: 'center' }}>
           <div style={{ padding: '4px 8px', borderRight: BORDER }}>
             <strong>Name of the Department :</strong>&nbsp;
             {bill?.department || faculty?.department || 'Computer Science'}
           </div>
-          <div style={{ padding: '4px 8px' }}>
+          <div style={{ padding: '4px 8px', borderRight: BORDER }}>
+            <strong>Name of the Faculty :</strong>&nbsp;{facultyName}
+          </div>
+          <div style={{ padding: '4px 8px', }}>
             <strong>Name of the HOD:</strong>&nbsp;{hodName}
           </div>
+
         </div>
+
+
 
         <div style={{ borderBottom: BORDER, textAlign: 'center', padding: '4px 8px', fontWeight: 'bold', fontSize: '11px' }}>
           PAPER SETTING
@@ -243,8 +258,8 @@ export const OfficialBillDocument = React.forwardRef(({
 
           <tbody>
             {Array.from({ length: TOTAL_ROWS }).map((_, idx) => {
-              const item       = itemList[idx];
-              const isDataRow  = !!item;
+              const item = itemList[idx];
+              const isDataRow = !!item;
               const isPractical = item?.paper_type === 'PRACTICAL';
 
               const settingCell = isDataRow && Number(item.paper_sets) > 0
@@ -263,12 +278,12 @@ export const OfficialBillDocument = React.forwardRef(({
                   <td style={bodyCell()}>
                     {isDataRow ? (item.class_name || classItem?.name || bill?.class?.name || 'TYCS') : ''}
                   </td>
-                  <td style={bodyCell({ textAlign: 'left', padding: '0 4px', textOverflow: 'ellipsis' })}>
+                  <td style={bodyCell({ textAlign: 'center', padding: '0 4px', textOverflow: 'ellipsis' })}>
                     {isDataRow ? (
                       <>
                         {item.subject?.name || item.subject_name}
-                        {isPractical && (
-                          <span style={{ fontSize: '9px', marginLeft: 3, opacity: 0.7 }}>(Pract)</span>
+                        {item.paper_type && (
+                          <span style={{ fontSize: '9px', marginLeft: 3, opacity: 0.75 }}>({examModeLabel(item.paper_type)})</span>
                         )}
                       </>
                     ) : ''}

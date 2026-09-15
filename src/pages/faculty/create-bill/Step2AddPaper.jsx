@@ -1,7 +1,7 @@
 import React from 'react';
 import { Select } from '@/components/ui/Select';
 import { Input } from '@/components/ui/Input';
-import { ArrowRight, ChevronLeft, BookOpen, Code2 } from 'lucide-react';
+import { ArrowRight, ChevronLeft, BookOpen, Code2, GraduationCap, PenLine } from 'lucide-react';
 import { clsx } from 'clsx';
 
 export const Step2AddPaper = ({
@@ -122,6 +122,38 @@ export const Step2AddPaper = ({
                 </div>
                 <p className="text-sm font-semibold self-center tracking-tight">Practical Paper</p>
               </button>
+
+              <button
+                type="button"
+                onClick={() => handleTypeSelect('ASSESSMENT')}
+                className={clsx(
+                  'p-4 rounded-xl border text-left flex items-start gap-3 transition-all cursor-pointer',
+                  currentItem.paper_type === 'ASSESSMENT'
+                    ? 'border-slate-900 bg-slate-900 text-white shadow-xs'
+                    : 'border-slate-200/80 bg-slate-50/60 hover:bg-white hover:border-slate-300 text-slate-900'
+                )}
+              >
+                <div className={clsx('p-2 rounded-lg shrink-0', currentItem.paper_type === 'ASSESSMENT' ? 'bg-white/20 text-white' : 'bg-white text-slate-700 shadow-2xs')}>
+                  <GraduationCap className="w-4 h-4" />
+                </div>
+                <p className="text-sm font-semibold self-center tracking-tight">Assessment Paper</p>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => handleTypeSelect('OE')}
+                className={clsx(
+                  'p-4 rounded-xl border text-left flex items-start gap-3 transition-all cursor-pointer',
+                  currentItem.paper_type === 'OE'
+                    ? 'border-slate-900 bg-slate-900 text-white shadow-xs'
+                    : 'border-slate-200/80 bg-slate-50/60 hover:bg-white hover:border-slate-300 text-slate-900'
+                )}
+              >
+                <div className={clsx('p-2 rounded-lg shrink-0', currentItem.paper_type === 'OE' ? 'bg-white/20 text-white' : 'bg-white text-slate-700 shadow-2xs')}>
+                  <PenLine className="w-4 h-4" />
+                </div>
+                <p className="text-sm font-semibold self-center tracking-tight">OE Paper</p>
+              </button>
             </div>
           </div>
         )}
@@ -144,7 +176,7 @@ export const Step2AddPaper = ({
               onClick={onCancelToAddMore}
               className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-medium text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 shadow-2xs transition-all cursor-pointer"
             >
-              Cancel &amp; Continue with Added Items
+              Cancel
             </button>
           )}
 

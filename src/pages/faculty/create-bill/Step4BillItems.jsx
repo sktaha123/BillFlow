@@ -34,7 +34,7 @@ export const Step4BillItems = ({
             Step 4: Bill Items Summary
           </h2>
           <p className="text-xs sm:text-sm text-slate-500">
-            Semester {draft.semester_label} • Academic Year {draft.academic_year_label}
+            Semester {draft.semester_label},&nbsp; Academic Year {draft.academic_year_label}
           </p>
         </div>
 

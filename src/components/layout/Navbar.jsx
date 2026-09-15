@@ -56,13 +56,13 @@ export const Navbar = () => {
               const isActive = location.pathname === link.path;
               return (
                 <Link
-                  key={link.path}
+                  key={link.path} 
                   to={link.path}
                   className={clsx(
                     'px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all duration-150',
                     isActive
-                      ? 'bg-slate-200 text-black shadow-xs'
-                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70'
+                      ? 'text-black '
+                      : 'text-slate-500 hover:text-slate-900 '
                   )}
                 >
                   {link.name}

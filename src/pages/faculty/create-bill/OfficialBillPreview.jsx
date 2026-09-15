@@ -110,7 +110,7 @@ export const OfficialBillPreview = ({
       {/* Official Bill Document Canvas */}
       <div className="bg-slate-100/70 rounded-xl border border-slate-200/80 shadow-xs overflow-x-auto w-full">
         <div className="w-fit min-w-full p-2 sm:p-6 flex justify-center">
-          <div className="w-[760px] shrink-0">
+          <div className="bill-canvas-wrapper" style={{ width: '100%' }}>
             <OfficialBillDocument
               ref={docRef}
               bill={{
