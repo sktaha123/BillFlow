@@ -277,54 +277,65 @@ export const SubjectsManagement = () => {
                           </div>
 
                           {/* MOBILE ACTION MENU */}
-                          <div
-                            ref={openMenuId === s.id ? menuRef : null}
-                            className="relative md:hidden shrink-0"
-                          >
-                            <button
-                              type="button"
-                              onClick={(e) => {
-                                e.stopPropagation();
+                          {/* MOBILE ACTION MENU */}
+<div
+  ref={openMenuId === s.id ? menuRef : null}
+  className="relative md:hidden shrink-0"
+>
+  <button
+    type="button"
+    onClick={(e) => {
+      e.stopPropagation();
 
-                                setOpenMenuId((current) =>
-                                  current === s.id ? null : s.id
-                                );
-                              }}
-                              className="w-10 h-10 flex items-center justify-center rounded-lg text-slate-500 hover:bg-slate-100 active:bg-slate-200 transition-colors touch-manipulation"
-                              aria-label={`Actions for ${s.name}`}
-                              aria-expanded={openMenuId === s.id}
-                            >
-                              <MoreVertical className="w-5 h-5" />
-                            </button>
+      setOpenMenuId((current) =>
+        current === s.id ? null : s.id
+      );
+    }}
+    className="w-10 h-10 flex items-center justify-center rounded-lg text-slate-500 hover:bg-slate-100 active:bg-slate-200 transition-colors touch-manipulation"
+    aria-label={`Actions for ${s.name}`}
+    aria-expanded={openMenuId === s.id}
+  >
+    <MoreVertical className="w-5 h-5" />
+  </button>
 
-                            {openMenuId === s.id && (
-                              <div className="absolute right-0 top-11 z-50 w-36 bg-white border border-slate-200 rounded-xl shadow-lg overflow-hidden">
-                                <button
-                                  type="button"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleEditInit(s);
-                                  }}
-                                  className="w-full px-4 py-3 flex items-center gap-3 text-sm font-medium text-slate-700 hover:bg-slate-50 active:bg-slate-100 transition-colors text-left"
-                                >
-                                  <Edit2 className="w-4 h-4 text-slate-500" />
-                                  Edit
-                                </button>
+  {openMenuId === s.id && (
+  <div
+    className={clsx(
+      "absolute right-0 z-[100] w-36 bg-white border border-slate-200 rounded-xl shadow-lg overflow-hidden",
+      subjects.length >= 2 &&
+        subjects.slice(-2).some(
+          (subject) => subject.id === s.id
+        )
+        ? "bottom-11"
+        : "top-11"
+    )}
+  >
+    <button
+      type="button"
+      onClick={(e) => {
+        e.stopPropagation();
+        handleEditInit(s);
+      }}
+      className="w-full px-4 py-3 flex items-center gap-3 text-sm font-medium text-slate-700 hover:bg-slate-50 active:bg-slate-100 transition-colors text-left"
+    >
+      <Edit2 className="w-4 h-4 text-slate-500" />
+      Edit
+    </button>
 
-                                <button
-                                  type="button"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleDeleteSubject(s);
-                                  }}
-                                  className="w-full px-4 py-3 flex items-center gap-3 text-sm font-medium text-rose-600 hover:bg-rose-50 active:bg-rose-100 transition-colors text-left"
-                                >
-                                  <Trash2 className="w-4 h-4" />
-                                  Delete
-                                </button>
-                              </div>
-                            )}
-                          </div>
+    <button
+      type="button"
+      onClick={(e) => {
+        e.stopPropagation();
+        handleDeleteSubject(s);
+      }}
+      className="w-full px-4 py-3 flex items-center gap-3 text-sm font-medium text-rose-600 hover:bg-rose-50 active:bg-rose-100 transition-colors text-left"
+    >
+      <Trash2 className="w-4 h-4" />
+      Delete
+    </button>
+  </div>
+)}
+</div>
                         </>
                       )}
                     </li>
