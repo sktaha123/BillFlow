@@ -18,8 +18,11 @@ export function AuthProvider({ children }) {
         const savedId = localStorage.getItem(AUTH_USER_KEY);
         if (savedId) {
           const profile = await dataService.getProfileById(savedId);
-          if (profile && mounted) {
+          if (profile && profile.is_active !== false && mounted) {
             setUser(profile);
+          } else if (profile?.is_active === false) {
+            // Account was deleted while they were logged in
+            localStorage.removeItem(AUTH_USER_KEY);
           }
         }
       } catch (err) {
@@ -59,6 +62,10 @@ export function AuthProvider({ children }) {
         }
 
         if (profile) {
+          if (profile.is_active === false) {
+            setIsLoading(false);
+            return { success: false, error: 'This account has been deactivated.' };
+          }
           setUser(profile);
           localStorage.setItem(AUTH_USER_KEY, profile.id);
           setIsLoading(false);
@@ -75,6 +82,10 @@ export function AuthProvider({ children }) {
         );
 
         if (matched) {
+          if (matched.is_active === false) {
+            setIsLoading(false);
+            return { success: false, error: 'This account has been deactivated.' };
+          }
           setUser(matched);
           localStorage.setItem(AUTH_USER_KEY, matched.id);
           setIsLoading(false);

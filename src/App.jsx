@@ -20,6 +20,7 @@ import { HeadApprovalSuccess } from '@/pages/head/HeadApprovalSuccess';
 import { BillsListPage } from '@/pages/common/BillsListPage';
 import { BillDetailsPage } from '@/pages/common/BillDetailsPage';
 import { OfficialBillViewPage } from '@/pages/common/OfficialBillViewPage';
+import { AdminDashboard } from '@/pages/admin/AdminDashboard';
 
 // Protected Route wrapper
 const ProtectedRoute = ({ children, allowedRoles }) => {
@@ -39,6 +40,7 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
 
   if (allowedRoles && !allowedRoles.includes(role)) {
     // Redirect to their own home
+    if (role === 'ADMIN') return <Navigate to="/admin" replace />;
     if (role === 'HOD') return <Navigate to="/hod" replace />;
     if (role === 'HEAD') return <Navigate to="/head" replace />;
     return <Navigate to="/faculty" replace />;
@@ -60,6 +62,7 @@ const RootRedirect = () => {
   }
 
   if (!user) return <Navigate to="/login" replace />;
+  if (role === 'ADMIN') return <Navigate to="/admin" replace />;
   if (role === 'HOD') return <Navigate to="/hod" replace />;
   if (role === 'HEAD') return <Navigate to="/head" replace />;
   return <Navigate to="/faculty" replace />;
@@ -72,12 +75,22 @@ const AppRoutes = () => {
       <Route path="/login" element={<LoginPage />} />
       <Route path="/" element={<RootRedirect />} />
 
-      {/* Signature Setup — All roles */}
+      {/* Signature Setup — All roles except ADMIN */}
       <Route
         path="/signature-setup"
         element={
           <ProtectedRoute allowedRoles={['FACULTY', 'HOD', 'HEAD']}>
             <SignatureSetupPage />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* ─── ADMIN ROUTES ─── */}
+      <Route
+        path="/admin"
+        element={
+          <ProtectedRoute allowedRoles={['ADMIN']}>
+            <AdminDashboard />
           </ProtectedRoute>
         }
       />

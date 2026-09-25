@@ -13,6 +13,10 @@ export const Navbar = () => {
   // Signature is intentionally NOT in navLinks — it lives only in the dropdown
   const getNavLinks = () => {
     switch (role) {
+      case 'ADMIN':
+        return [
+          { name: 'Dashboard', path: '/admin', icon: Home },
+        ];
       case 'FACULTY':
         return [
           { name: 'Dashboard', path: '/faculty', icon: Home },
@@ -36,7 +40,7 @@ export const Navbar = () => {
   };
 
   const navLinks = getNavLinks();
-  const homeLink = role === 'HOD' ? '/hod' : role === 'HEAD' ? '/head' : '/faculty';
+  const homeLink = role === 'ADMIN' ? '/admin' : role === 'HOD' ? '/hod' : role === 'HEAD' ? '/head' : '/faculty';
 
   return (
     <header className="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-slate-200/70 no-print transition-all">
@@ -138,22 +142,24 @@ export const Navbar = () => {
                     })}
                   </div>
 
-                  {/* Signature — single link, always in dropdown only */}
-                  <div className="py-0.5 border-b border-slate-100 mb-1">
-                    <Link
-                      to="/signature-setup"
-                      onClick={() => setIsDropdownOpen(false)}
-                      className={clsx(
-                        'w-full text-left px-3 py-2 text-xs font-medium rounded-xl flex items-center gap-2.5 transition-colors hover:bg-slate-50',
-                        user?.signature_path
-                          ? 'text-slate-700'
-                          : 'text-amber-700'
-                      )}
-                    >
-                      <PenTool className={clsx('w-3.5 h-3.5', user?.signature_path ? 'text-emerald-600' : 'text-amber-500')} />
-                      {user?.signature_path ? 'Signature Active' : 'Setup Signature'}
-                    </Link>
-                  </div>
+                  {/* Signature — single link, always in dropdown only (not for ADMIN) */}
+                  {role !== 'ADMIN' && (
+                    <div className="py-0.5 border-b border-slate-100 mb-1">
+                      <Link
+                        to="/signature-setup"
+                        onClick={() => setIsDropdownOpen(false)}
+                        className={clsx(
+                          'w-full text-left px-3 py-2 text-xs font-medium rounded-xl flex items-center gap-2.5 transition-colors hover:bg-slate-50',
+                          user?.signature_path
+                            ? 'text-slate-700'
+                            : 'text-amber-700'
+                        )}
+                      >
+                        <PenTool className={clsx('w-3.5 h-3.5', user?.signature_path ? 'text-emerald-600' : 'text-amber-500')} />
+                        {user?.signature_path ? 'Signature Active' : 'Setup Signature'}
+                      </Link>
+                    </div>
+                  )}
 
                   {/* Sign out */}
                   <div className="py-0.5">

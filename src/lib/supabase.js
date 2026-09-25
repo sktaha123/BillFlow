@@ -749,6 +749,174 @@ class DataService {
     this.setStore(STORAGE_KEYS.BILLS, bills);
     return bill;
   }
+
+  // ============================================================
+  // ADMIN FUNCTIONS
+  // ============================================================
+
+  async getAllProfilesWithAssignments() {
+    if (isSupabaseConfigured && supabase) {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select(`
+          *,
+          assignments:faculty_subjects(
+            subject:subjects(
+              id, name,
+              class:classes(id, name)
+            )
+          )
+        `)
+        .neq('role', 'ADMIN') // Don't show the super admin in the management list
+        .order('name');
+      
+      if (error) {
+        console.error('Error fetching admin profiles', error);
+        throw error;
+      }
+      return data || [];
+    }
+    return []; // Local fallback not fully implemented for admin complex joins
+  }
+
+  async softDeleteProfile(profileId) {
+    if (isSupabaseConfigured && supabase) {
+      const { error } = await supabase
+        .from('profiles')
+        .update({ is_active: false })
+        .eq('id', profileId);
+      
+      if (error) throw error;
+      return true;
+    }
+    return false;
+  }
+
+  async reactivateProfile(profileId) {
+    if (isSupabaseConfigured && supabase) {
+      const { error } = await supabase
+        .from('profiles')
+        .update({ is_active: true })
+        .eq('id', profileId);
+      
+      if (error) throw error;
+      return true;
+    }
+    return false;
+  }
+
+  async createFacultyProfile(profileData, selectedSubjectIds) {
+    if (isSupabaseConfigured && supabase) {
+      // 1. Insert profile
+      const { data: profile, error: profileError } = await supabase
+        .from('profiles')
+        .insert([{
+          username: profileData.username,
+          password: profileData.password,
+          name: profileData.name,
+          role: profileData.role || 'FACULTY',
+          department: profileData.department || 'Computer Science'
+        }])
+        .select()
+        .single();
+
+      if (profileError) throw profileError;
+
+      // 2. Assign subjects if any
+      if (selectedSubjectIds && selectedSubjectIds.length > 0) {
+        const assignments = selectedSubjectIds.map(subId => ({
+          faculty_id: profile.id,
+          subject_id: subId
+        }));
+        const { error: assignError } = await supabase
+          .from('faculty_subjects')
+          .insert(assignments);
+          
+        if (assignError) {
+          console.error('Error assigning subjects, but profile was created', assignError);
+        }
+      }
+      
+      return profile;
+    }
+    return null;
+  }
+
+  async updateFacultyAssignments(facultyId, newSubjectIds) {
+    if (isSupabaseConfigured && supabase) {
+      // 1. Delete all existing assignments for this faculty
+      const { error: deleteError } = await supabase
+        .from('faculty_subjects')
+        .delete()
+        .eq('faculty_id', facultyId);
+        
+      if (deleteError) throw deleteError;
+
+      // 2. Insert new assignments
+      if (newSubjectIds && newSubjectIds.length > 0) {
+        const assignments = newSubjectIds.map(subId => ({
+          faculty_id: facultyId,
+          subject_id: subId
+        }));
+        
+        const { error: insertError } = await supabase
+          .from('faculty_subjects')
+          .insert(assignments);
+          
+        if (insertError) throw insertError;
+      }
+      return true;
+    }
+    return false;
+  }
+
+  // ============================================================
+  // SUBJECT MANAGEMENT
+  // ============================================================
+  
+  async createSubject(classId, name) {
+    if (isSupabaseConfigured && supabase) {
+      const { data, error } = await supabase
+        .from('subjects')
+        .insert([{ class_id: classId, name, active: true }])
+        .select()
+        .single();
+        
+      if (error) throw error;
+      return data;
+    }
+    return null;
+  }
+
+  async updateSubject(subjectId, newName) {
+    if (isSupabaseConfigured && supabase) {
+      const { data, error } = await supabase
+        .from('subjects')
+        .update({ name: newName })
+        .eq('id', subjectId)
+        .select()
+        .single();
+        
+      if (error) throw error;
+      return data;
+    }
+    return null;
+  }
+
+  async deleteSubject(subjectId) {
+    if (isSupabaseConfigured && supabase) {
+      // Soft delete to prevent breaking existing bill_items
+      const { error } = await supabase
+        .from('subjects')
+        .update({ active: false })
+        .eq('id', subjectId);
+        
+      if (error) throw error;
+      return true;
+    }
+    return false;
+  }
+
 }
 
 export const dataService = new DataService();
