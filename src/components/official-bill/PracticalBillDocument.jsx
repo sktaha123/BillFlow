@@ -63,7 +63,7 @@ export function PracticalBillDocument({ bill = {} }) {
   return (
     <div
       id="official-bill-document"
-      className="official-bill-document"
+      className="print-area official-bill-document"
       data-bill-root
       style={{
         fontFamily: "'Times New Roman', Times, serif",

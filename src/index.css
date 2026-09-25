@@ -167,16 +167,40 @@
   }
 }
 
-/* ─── Print — Strict Form Layout ─── */
+/* ─── Print — Strict A4 Layout ─── */
 @media print {
-  html, body {
+  /*
+   * ROOT FIX (mobile blank page 2):
+   *
+   * The global body rule sets `min-height: 100dvh`. On mobile devices,
+   * 100dvh can exceed 297mm (A4 height). If this leaks into the print
+   * context, the print engine considers the body taller than one A4 page
+   * and generates a blank second page.
+   *
+   * We MUST explicitly reset BOTH `height` and `min-height` to 0/auto
+   * on html AND body, and lock their width to exactly 210mm so the
+   * print layout engine starts from clean A4 geometry on every device.
+   */
+  html {
+    background: #ffffff !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 210mm !important;
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+  }
+
+  body {
     background: #ffffff !important;
     color: #000000 !important;
     padding: 0 !important;
     margin: 0 !important;
-    overflow: visible !important;
-    min-height: auto !important;
+    /* Kill the 100dvh min-height — this is the primary mobile culprit */
+    min-height: 0 !important;
     height: auto !important;
+    width: 210mm !important;
+    overflow: visible !important;
   }
 
   *, *::before, *::after {
@@ -197,12 +221,11 @@
   }
 
   /*
-   * The canvas wrapper (slate-gray background, border-radius, padding) is
-   * hidden during print.  Its child .print-area is pulled out and rendered
-   * at the top of the page via the display:contents trick.
+   * The canvas wrapper strips its visual chrome for printing.
+   * Width is clamped to 210mm — NOT 100% — so it cannot inherit
+   * a mobile viewport width and inflate the A4 document geometry.
    */
   .no-print-wrapper {
-    /* Hide the wrapper visuals but keep descendants renderable */
     background: transparent !important;
     border: none !important;
     box-shadow: none !important;
@@ -211,11 +234,12 @@
     margin: 0 !important;
     overflow: visible !important;
     display: block !important;
-    width: 100% !important;
-    max-width: 100% !important;
+    /* Lock to A4 width — not 100% viewport */
+    width: 210mm !important;
+    max-width: 210mm !important;
   }
 
-  /* Remove any centering/padding intermediate wrappers inside the canvas */
+  /* Intermediate wrappers inside the canvas */
   .no-print-wrapper > *,
   .no-print-wrapper > * > * {
     padding: 0 !important;
@@ -238,32 +262,42 @@
   .space-y-8 {
     padding: 0 !important;
     margin: 0 !important;
-    max-width: 100% !important;
-    width: 100% !important;
+    min-height: 0 !important;
+    height: auto !important;
+    max-width: 210mm !important;
+    width: 210mm !important;
     overflow: visible !important;
     display: block !important;
   }
 
   /*
-   * THE DOCUMENT ITSELF — do NOT override padding or border.
-   * The .print-area element IS the official bill document.  Its padding,
-   * border, and geometry are the canonical source of truth and must not
-   * be altered during printing.
-   * We only ensure it fills the page width and is visible.
+   * The A4 bill document itself.
+   * Physical A4 dimensions are authoritative. We do NOT set height here —
+   * the document's content determines its height, which must be ≤ 297mm.
+   * The padding and borders on .official-bill-document are the canonical
+   * source of truth and must not be overridden.
    */
+  .official-bill-document,
   .print-area {
     display: block !important;
     margin: 0 auto !important;
-    /* Do NOT set padding: 0 — the document's own padding is intentional */
-    /* Do NOT set border: none — the bill's outer border is intentional */
+    /* Enforce exact A4 width on every device */
+    width: 210mm !important;
+    min-width: 210mm !important;
+    max-width: 210mm !important;
+    /* Do NOT fix height — let content determine it */
+    min-height: 0 !important;
     background: #ffffff !important;
     color: #000000 !important;
+    /* Prevent browser from splitting the bill across pages */
     page-break-inside: avoid !important;
     break-inside: avoid !important;
+    overflow: visible !important;
   }
 
   /* Ensure all text and borders inside the document print in black */
-  .print-area * {
+  .print-area *,
+  .official-bill-document * {
     color: #000000 !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
@@ -275,9 +309,9 @@
 
   /*
    * @page: zero margins so the document's own padding is the sole
-   * authority for how much whitespace appears at the page edges.
-   * This ensures Print → Save as PDF has the same geometry as
-   * the directly-downloaded PDF.
+   * authority for whitespace at page edges.
+   * A4 portrait is explicit so mobile browsers cannot default to
+   * "letter" or the device's native paper size.
    */
   @page {
     size: A4 portrait;

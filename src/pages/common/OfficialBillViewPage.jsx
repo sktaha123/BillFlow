@@ -35,10 +35,12 @@ export const OfficialBillViewPage = () => {
     if (!bill) return;
     try {
       setIsDownloading(true);
-      await downloadOfficialBillPdf(
-        docRef.current,
-        `Bill-${bill.bill_reference_id || id}.pdf`
-      );
+
+      const className = (bill?.class?.name || bill?.class_name || 'Bill').replace(/\s+/g, '');
+      const firstName = (bill?.faculty?.name || 'Faculty').trim().split(/\s+/)[0];
+      const fileName  = `${className}_${firstName}.pdf`;
+
+      await downloadOfficialBillPdf(docRef.current, fileName);
     } catch (err) {
       console.error('PDF export failed', err);
       alert('Failed to generate PDF. Please use the Print button as an alternative.');
@@ -46,6 +48,8 @@ export const OfficialBillViewPage = () => {
       setIsDownloading(false);
     }
   };
+
+
 
   if (isLoading) {
     return (

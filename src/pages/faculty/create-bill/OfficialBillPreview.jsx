@@ -26,9 +26,14 @@ export const OfficialBillPreview = ({
   const handleDownload = async () => {
     try {
       setIsDownloading(true);
+
+      const className   = (draft.class_name || 'Bill').replace(/\s+/g, '');
+      const firstName   = (faculty?.name || 'Faculty').trim().split(/\s+/)[0];
+      const fileName    = `${className}_${firstName}.pdf`;
+
       await downloadOfficialBillPdf(
         docRef.current || '#official-bill-document',
-        `Official-Bill-${activeMethod}.pdf`
+        fileName
       );
     } catch (err) {
       console.error('PDF export failed', err);
@@ -37,6 +42,8 @@ export const OfficialBillPreview = ({
       setIsDownloading(false);
     }
   };
+
+
 
   const handleFormSubmit = () => {
     if (!faculty?.signature_path) {
