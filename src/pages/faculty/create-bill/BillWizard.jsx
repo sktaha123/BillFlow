@@ -43,8 +43,8 @@ export const BillWizard = () => {
   // Reference data
   const [academicYears, setAcademicYears] = useState([]);
   const [semesters, setSemesters]         = useState([]);
-  const [classes, setClasses]             = useState([]);
-  const [subjects, setSubjects]           = useState([]);
+  const [allClasses, setAllClasses]       = useState([]);  // all classes from DB
+  const [allSubjects, setAllSubjects]     = useState([]);  // all subjects for this faculty
   const [settings, setSettings]           = useState(null);
 
   const getCurrentMonthYear = () => {
@@ -91,23 +91,33 @@ export const BillWizard = () => {
   });
 
   useEffect(() => {
+    if (!user) return; // wait until auth is resolved
     const loadData = async () => {
+      const isFaculty = user?.role === 'FACULTY';
+      const facultyId = isFaculty ? user?.id : null;
+
       const [ay, sem, cls, subs, st] = await Promise.all([
         dataService.getAcademicYears(),
         dataService.getSemesters(),
         dataService.getClasses(),
-        dataService.getSubjects(),
+        dataService.getSubjects(null, facultyId),
         dataService.getSettings(),
       ]);
       setAcademicYears(ay);
       setSemesters(sem);
-      setClasses(cls);
-      setSubjects(subs);
+      setAllClasses(cls);
+      setAllSubjects(subs);
       setSettings(st);
 
-      const currYear   = ay.find((y) => y.is_current) || ay[0];
-      const semVI      = sem.find((s) => s.roman_label === 'VI') || sem[0];
-      const defaultCls = cls[0];
+      // Derive the classes this faculty actually teaches
+      const assignedClassIds = new Set(subs.map(s => s.class_id));
+      const teacherClasses   = isFaculty
+        ? cls.filter(c => assignedClassIds.has(c.id))
+        : cls;
+      const defaultCls = teacherClasses[0] || cls[0];
+
+      const currYear = ay.find((y) => y.is_current) || ay[0];
+      const semVI    = sem.find((s) => s.roman_label === 'VI') || sem[0];
 
       setDraft((prev) => ({
         ...prev,
@@ -117,12 +127,25 @@ export const BillWizard = () => {
         semester_label:      semVI?.roman_label || 'VI',
         session_type:        semVI?.session_type || 'Summer Session',
         class_id:            defaultCls?.id  || '',
-        class_name:          defaultCls?.name || 'SYCS',
+        class_name:          defaultCls?.name || '',
       }));
-      setCurrentItem((prev) => ({ ...prev, class_id: defaultCls?.id || '', class_name: defaultCls?.name || 'SYCS' }));
+      setCurrentItem((prev) => ({ ...prev, class_id: defaultCls?.id || '', class_name: defaultCls?.name || '' }));
     };
     loadData();
-  }, []);
+  }, [user]);
+
+  const isFaculty = user?.role === 'FACULTY';
+
+  // Classes that this faculty teaches (derived from assigned subjects)
+  const filteredClasses = isFaculty
+    ? allClasses.filter(c => allSubjects.some(s => s.class_id === c.id))
+    : allClasses;
+
+  // Subjects filtered by the class currently selected in the draft
+  const filteredSubjects = draft.class_id
+    ? allSubjects.filter(s => s.class_id === draft.class_id)
+    : allSubjects;
+
 
   // Index being edited in Step 3
   const [editingIndex, setEditingIndex] = useState(null);
@@ -131,8 +154,8 @@ export const BillWizard = () => {
   const commitCurrentItem = () => {
     let newItem = {
       ...currentItem,
-      subject:      subjects.find((s) => s.id === currentItem.subject_id),
-      subject_name: subjects.find((s) => s.id === currentItem.subject_id)?.name || currentItem.subject_name || 'Subject',
+      subject:      filteredSubjects.find((s) => s.id === currentItem.subject_id),
+      subject_name: filteredSubjects.find((s) => s.id === currentItem.subject_id)?.name || currentItem.subject_name || 'Subject',
       class_id:     draft.class_id || currentItem.class_id || '',
       class_name:   draft.class_name || currentItem.class_name || 'SYCS',
     };
@@ -320,18 +343,17 @@ export const BillWizard = () => {
           setDraft={setDraft}
           academicYears={academicYears}
           semesters={semesters}
-          classes={classes}
+          classes={filteredClasses}
           onNext={() => setCurrentStep(2)}
           onCancel={() => setCurrentStep(0)}
         />
       )}
 
-      {/* STEP 2 — Select Subject / Course */}
       {currentStep === 2 && (
         <Step2AddPaper
           currentItem={currentItem}
           setCurrentItem={setCurrentItem}
-          subjects={subjects}
+          subjects={filteredSubjects}
           billingMethod={billingMethod}
           hasExistingItems={draft.items.length > 0}
           onCancelToAddMore={() => setCurrentStep(4)}

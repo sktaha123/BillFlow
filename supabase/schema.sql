@@ -10,6 +10,7 @@ DROP TABLE IF EXISTS bill_approvals CASCADE;
 DROP TABLE IF EXISTS bill_items CASCADE;
 DROP TABLE IF EXISTS bills CASCADE;
 DROP TABLE IF EXISTS system_settings CASCADE;
+DROP TABLE IF EXISTS faculty_subjects CASCADE;
 DROP TABLE IF EXISTS subjects CASCADE;
 DROP TABLE IF EXISTS classes CASCADE;
 DROP TABLE IF EXISTS semesters CASCADE;
@@ -93,6 +94,14 @@ CREATE TABLE profiles (
     signature_path TEXT,
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- ─── 4.5. FACULTY SUBJECT ASSIGNMENTS ───
+CREATE TABLE faculty_subjects (
+    faculty_id UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
+    subject_id UUID NOT NULL REFERENCES subjects(id) ON DELETE CASCADE,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    PRIMARY KEY (faculty_id, subject_id)
 );
 
 -- ─── 5. BILLS & WORKFLOW TABLES ───
@@ -217,6 +226,7 @@ ALTER TABLE academic_years ENABLE ROW LEVEL SECURITY;
 ALTER TABLE semesters ENABLE ROW LEVEL SECURITY;
 ALTER TABLE classes ENABLE ROW LEVEL SECURITY;
 ALTER TABLE subjects ENABLE ROW LEVEL SECURITY;
+ALTER TABLE faculty_subjects ENABLE ROW LEVEL SECURITY;
 ALTER TABLE system_settings ENABLE ROW LEVEL SECURITY;
 ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE bills ENABLE ROW LEVEL SECURITY;
@@ -227,6 +237,7 @@ CREATE POLICY "Allow public all academic_years" ON academic_years FOR ALL USING 
 CREATE POLICY "Allow public all semesters" ON semesters FOR ALL USING (true) WITH CHECK (true);
 CREATE POLICY "Allow public all classes" ON classes FOR ALL USING (true) WITH CHECK (true);
 CREATE POLICY "Allow public all subjects" ON subjects FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "Allow public all faculty_subjects" ON faculty_subjects FOR ALL USING (true) WITH CHECK (true);
 CREATE POLICY "Allow public all system_settings" ON system_settings FOR ALL USING (true);
 CREATE POLICY "Allow public all profiles" ON profiles FOR ALL USING (true) WITH CHECK (true);
 CREATE POLICY "Allow public all bills" ON bills FOR ALL USING (true) WITH CHECK (true);

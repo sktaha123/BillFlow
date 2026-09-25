@@ -86,9 +86,6 @@ export const SEED_CLASSES = [
 ];
 
 export const SEED_SUBJECTS = [
-  { id: 'sub-ai',         class_id: 'cls-tycs', name: 'Introduction to AI',     active: true },
-  { id: 'sub-daa',        class_id: 'cls-tycs', name: 'DAA',                    active: true },
-  { id: 'sub-fuzzy',      class_id: 'cls-tycs', name: 'Fuzzy Logic',            active: true },
   { id: 'sub-blockchain', class_id: 'cls-tycs', name: 'Blockchain Technology',  active: true }
 ];
 
@@ -103,7 +100,7 @@ const STORAGE_KEYS = {
 // ─── Full Supabase bill select fragment ───────────────────────────────────────
 const BILL_SELECT = `
   *,
-  faculty:profiles!bills_faculty_id_fkey(*),
+  faculty:profiles(*),
   class:classes(*),
   semester:semesters(*),
   academic_year:academic_years(*),
@@ -236,12 +233,28 @@ class DataService {
     return SEED_CLASSES;
   }
 
-  async getSubjects(classId) {
+  async getSubjects(classId, facultyId) {
     if (isSupabaseConfigured && supabase) {
-      let q = supabase.from('subjects').select('*').eq('active', true);
-      if (classId) q = q.eq('class_id', classId);
-      const { data } = await q;
-      if (data && data.length > 0) return data;
+      if (facultyId) {
+        const { data } = await supabase
+          .from('faculty_subjects')
+          .select('subjects(*)')
+          .eq('faculty_id', facultyId);
+          
+        if (data && data.length > 0) {
+          let subjects = data.map(d => d.subjects).filter(Boolean).filter(s => s.active === true);
+          if (classId) {
+            subjects = subjects.filter(s => s.class_id === classId);
+          }
+          return subjects;
+        }
+        return [];
+      } else {
+        let q = supabase.from('subjects').select('*').eq('active', true);
+        if (classId) q = q.eq('class_id', classId);
+        const { data } = await q;
+        if (data && data.length > 0) return data;
+      }
     }
     return classId ? SEED_SUBJECTS.filter(s => s.class_id === classId) : SEED_SUBJECTS;
   }
@@ -270,20 +283,34 @@ class DataService {
 
   async getBillById(id) {
     if (isSupabaseConfigured && supabase) {
+      // Try UUID match first (most reliable)
       let { data, error } = await supabase
         .from('bills')
         .select(BILL_SELECT)
-        .or(`id.eq.${id},bill_reference_id.eq.${id}`)
-        .single();
+        .eq('id', id)
+        .maybeSingle();
+
+      // If UUID lookup fails (e.g. id is a bill_reference_id), try ref ID
+      if (!data && !error) {
+        const refLookup = await supabase
+          .from('bills')
+          .select(BILL_SELECT)
+          .eq('bill_reference_id', id)
+          .maybeSingle();
+        data  = refLookup.data;
+        error = refLookup.error;
+      }
 
       if (error) {
+        console.warn('getBillById full select failed, trying basic select:', error.message);
         // Fallback to basic query if new tables don't exist yet in Supabase
         const fallback = await supabase
           .from('bills')
           .select(BILL_SELECT_BASIC)
-          .or(`id.eq.${id},bill_reference_id.eq.${id}`)
-          .single();
+          .eq('id', id)
+          .maybeSingle();
         if (!fallback.error && fallback.data) data = fallback.data;
+        else if (fallback.error) console.error('getBillById basic fallback also failed:', fallback.error.message);
       }
 
       if (data) return data;
