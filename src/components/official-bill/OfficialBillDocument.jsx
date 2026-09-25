@@ -50,7 +50,7 @@ export const OfficialBillDocument = React.forwardRef(({
         ? bill.answer_book_items
         : (bill?.items || []));
     return (
-      <div ref={ref} id="official-bill-document" className="print-area w-full">
+      <div ref={ref} id="official-bill-document" data-bill-root>
         <AnswerBookBillDocument bill={{ ...mergedBill, answer_book_items: itemData, items: itemData }} />
       </div>
     );
@@ -63,7 +63,7 @@ export const OfficialBillDocument = React.forwardRef(({
         ? bill.practical_items
         : (bill?.items || []));
     return (
-      <div ref={ref} id="official-bill-document" className="print-area w-full">
+      <div ref={ref} id="official-bill-document" data-bill-root>
         <PracticalBillDocument bill={{ ...mergedBill, practical_items: itemData, items: itemData }} />
       </div>
     );
@@ -76,7 +76,7 @@ export const OfficialBillDocument = React.forwardRef(({
         ? bill.online_items
         : (bill?.items || []));
     return (
-      <div ref={ref} id="official-bill-document" className="print-area w-full">
+      <div ref={ref} id="official-bill-document" data-bill-root>
         <OnlineNepBillDocument bill={{ ...mergedBill, online_items: itemData, items: itemData }} />
       </div>
     );
@@ -165,16 +165,12 @@ export const OfficialBillDocument = React.forwardRef(({
     <div
       ref={ref}
       id="official-bill-document"
-      className="print-area bg-white text-black"
+      className="print-area official-bill-document"
+      data-bill-root
       style={{
         fontFamily: "'Times New Roman', Times, serif",
         fontSize: '11px',
-        color: '#000000',
-        backgroundColor: '#ffffff',
-        width: '100%',
-        margin: '0 auto',
-        padding: '6px 8px',
-        boxSizing: 'border-box',
+        padding: '10px 14px',
       }}
     >
       <div style={{ border: BORDER, boxSizing: 'border-box' }}>
@@ -190,32 +186,31 @@ export const OfficialBillDocument = React.forwardRef(({
           UG / PG - Semester End Examinations ({cleanSession})
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr  1fr', borderBottom: BORDER, fontSize: '11px', alignItems: 'center' }}>
-          <div style={{ padding: '4px 8px', borderRight: BORDER }}>
-            <strong>Semester :</strong>{' '}
+        <div style={{ display: 'flex', borderBottom: BORDER, fontSize: '11px' }}>
+          <div style={{ flex: 1, padding: '4px 8px', borderRight: BORDER, display: 'flex', alignItems: 'center' }}>
+            <strong>Semester :</strong>&nbsp;
             {['I', 'II', 'III', 'IV', 'V', 'VI'].map((r, i) => (
               <span key={r} style={{ fontWeight: (semester?.roman_label || bill?.semester?.roman_label) === r ? 'bold' : 'normal' }}>
                 {r}{i < 5 ? ' / ' : ''}
               </span>
             ))}
           </div>
-          <div style={{ padding: '4px 8px' }}>
-            <strong>Month &amp; Year :</strong> {monthYearStr}
+          <div style={{ flex: 1, padding: '4px 8px', display: 'flex', alignItems: 'center' }}>
+            <strong>Month &amp; Year :</strong>&nbsp;{monthYearStr}
           </div>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', borderBottom: BORDER, fontSize: '11px', alignItems: 'center' }}>
-          <div style={{ padding: '4px 8px', borderRight: BORDER }}>
+        <div style={{ display: 'flex', borderBottom: BORDER, fontSize: '11px' }}>
+          <div style={{ flex: 1, padding: '4px 8px', borderRight: BORDER, display: 'flex', alignItems: 'center' }}>
             <strong>Name of the Department :</strong>&nbsp;
             {bill?.department || faculty?.department || 'Computer Science'}
           </div>
-          <div style={{ padding: '4px 8px', borderRight: BORDER }}>
+          <div style={{ flex: 1, padding: '4px 8px', borderRight: BORDER, display: 'flex', alignItems: 'center' }}>
             <strong>Name of the Faculty :</strong>&nbsp;{facultyName}
           </div>
-          <div style={{ padding: '4px 8px', }}>
+          <div style={{ flex: 1, padding: '4px 8px', display: 'flex', alignItems: 'center' }}>
             <strong>Name of the HOD:</strong>&nbsp;{hodName}
           </div>
-
         </div>
 
 

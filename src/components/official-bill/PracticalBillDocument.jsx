@@ -30,6 +30,7 @@ export function PracticalBillDocument({ bill = {} }) {
   const department  = bill.department || faculty.department || 'Computer Science';
   const hodName     = bill.hod_name || hodApproval?.user?.name || hodApproval?.user_name || 'Vinod Rajput';
   const className   = bill.class_name || bill.class?.name || 'SYCS';
+  const facultyName = faculty?.full_name || faculty?.name || bill?.faculty?.full_name || bill?.faculty?.name || '';
 
   const headerCell = (extra = {}) => ({
     border: BORDER,
@@ -62,18 +63,12 @@ export function PracticalBillDocument({ bill = {} }) {
   return (
     <div
       id="official-bill-document"
-      className="print-area bg-white text-black"
+      className="official-bill-document"
+      data-bill-root
       style={{
         fontFamily: "'Times New Roman', Times, serif",
         fontSize: '11px',
-        color: '#000000',
-        backgroundColor: '#ffffff',
-        width: '100%',
-        minWidth: '680px',
-        maxWidth: '760px',
-        margin: '0 auto',
-        padding: '12px 16px',
-        boxSizing: 'border-box',
+        padding: '10px 14px',
       }}
     >
       <div style={{ border: BORDER, boxSizing: 'border-box' }}>
@@ -87,29 +82,32 @@ export function PracticalBillDocument({ bill = {} }) {
           UG / PG - Semester End Examinations (Winter Session / Summer Session)
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr', borderBottom: BORDER, fontSize: '11px', alignItems: 'center' }}>
-          <div style={{ padding: '4px 8px', borderRight: BORDER }}>
-            <strong>Semester :</strong>{' '}
+        <div style={{ display: 'flex', borderBottom: BORDER, fontSize: '11px' }}>
+          <div style={{ flex: 2, padding: '4px 8px', borderRight: BORDER, display: 'flex', alignItems: 'center' }}>
+            <strong>Semester :</strong>&nbsp;
             {['I', 'II', 'III', 'IV', 'V', 'VI'].map((r, i) => (
               <span key={r} style={{ fontWeight: (semester?.roman_label || bill?.semester?.roman_label) === r ? 'bold' : 'normal' }}>
                 {r}{i < 5 ? ' / ' : ''}
               </span>
             ))}
           </div>
-          <div style={{ padding: '4px 8px', borderRight: BORDER }}>
-            <strong>Class:</strong> {className}
+          <div style={{ flex: 1, padding: '4px 8px', borderRight: BORDER, display: 'flex', alignItems: 'center' }}>
+            <strong>Class:</strong>&nbsp;{className}
           </div>
-          <div style={{ padding: '4px 8px' }}>
-            <strong>Month &amp; Year :</strong> {monthYear}
+          <div style={{ flex: 1, padding: '4px 8px', display: 'flex', alignItems: 'center' }}>
+            <strong>Month &amp; Year :</strong>&nbsp;{monthYear}
           </div>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', borderBottom: BORDER, fontSize: '11px', alignItems: 'center' }}>
-          <div style={{ padding: '4px 8px', borderRight: BORDER }}>
-            <strong>Name of the Department :</strong> {department}
+        <div style={{ display: 'flex', borderBottom: BORDER, fontSize: '11px' }}>
+          <div style={{ flex: 1, padding: '4px 8px', borderRight: BORDER, display: 'flex', alignItems: 'center' }}>
+            <strong>Name of the Department :</strong>&nbsp;{department}
           </div>
-          <div style={{ padding: '4px 8px' }}>
-            <strong>Name of the HOD:</strong> {hodName}
+          <div style={{ flex: 1, padding: '4px 8px', borderRight: BORDER, display: 'flex', alignItems: 'center' }}>
+            <strong>Name of the Faculty :</strong>&nbsp;{facultyName}
+          </div>
+          <div style={{ flex: 1, padding: '4px 8px', display: 'flex', alignItems: 'center' }}>
+            <strong>Name of the HOD:</strong>&nbsp;{hodName}
           </div>
         </div>
 

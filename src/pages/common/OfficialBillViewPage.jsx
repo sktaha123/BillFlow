@@ -115,9 +115,10 @@ export const OfficialBillViewPage = () => {
         The .print-area class on OfficialBillDocument makes it visible during print.
         The action bar above has .no-print so it's hidden; this div renders cleanly.
       */}
-      <div className="bg-slate-100/70 rounded-xl border border-slate-200/80 shadow-xs overflow-x-auto w-full">
+      {/* Document canvas — outer shell is hidden during print; the .print-area inside renders cleanly */}
+      <div className="bill-canvas-wrapper no-print-wrapper bg-slate-100/70 rounded-xl border border-slate-200/80 shadow-xs overflow-x-auto w-full">
         <div className="w-fit min-w-full p-2 sm:p-6 flex justify-center">
-          <div className="w-[760px] shrink-0">
+          <div className="w-[794px] shrink-0">
             <OfficialBillDocument
               ref={docRef}
               bill={bill}

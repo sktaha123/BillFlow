@@ -48,7 +48,7 @@
     font-weight: 600;
   }
 
-  /* ── Global table: always scroll horizontally, never overflow ── */
+  /* Global table: always scroll horizontally, never overflow */
   table {
     width: 100%;
     min-width: 0;
@@ -60,6 +60,53 @@
     -webkit-overflow-scrolling: touch;
     width: 100%;
   }
+}
+
+/* ─── A4 OFFICIAL DOCUMENT FOUNDATION ─── */
+.official-bill-document {
+  width: 210mm !important;
+  min-width: 210mm !important;
+  max-width: 210mm !important;
+  min-height: 297mm;
+  box-sizing: border-box;
+  background: #ffffff;
+  color: #000000;
+  margin: 0 auto;
+  /* Prevent scaling interference */
+  transform-origin: top left;
+}
+
+.official-bill-document table {
+  width: 100%;
+  border-collapse: collapse;
+  border-spacing: 0;
+  table-layout: fixed;
+}
+
+.official-bill-document th,
+.official-bill-document td {
+  box-sizing: border-box;
+}
+
+/* Remove perimeter borders to prevent 2px overlap with outer wrapper border */
+.official-bill-document table {
+  border-left: none !important;
+  border-right: none !important;
+  border-bottom: none !important;
+}
+
+.official-bill-document tr th:first-child,
+.official-bill-document tr td:first-child {
+  border-left: none !important;
+}
+
+.official-bill-document tr th:last-child,
+.official-bill-document tr td:last-child {
+  border-right: none !important;
+}
+
+.official-bill-document tbody tr:last-child td {
+  border-bottom: none !important;
 }
 
 /* ─── Ambient Lighting & Glass Utilities ─── */
@@ -138,19 +185,49 @@
     box-shadow: none !important;
   }
 
-  /* Hide all UI chrome */
+  /* Hide all non-document UI chrome */
   .no-print,
   nav,
   header,
   footer,
   button,
   .ambient-glow,
-  .print-hidden,
-  .no-print-wrapper {
+  .print-hidden {
     display: none !important;
   }
 
-  /* Reset layout containers so they don't clip or add margins/overflow */
+  /*
+   * The canvas wrapper (slate-gray background, border-radius, padding) is
+   * hidden during print.  Its child .print-area is pulled out and rendered
+   * at the top of the page via the display:contents trick.
+   */
+  .no-print-wrapper {
+    /* Hide the wrapper visuals but keep descendants renderable */
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    overflow: visible !important;
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  /* Remove any centering/padding intermediate wrappers inside the canvas */
+  .no-print-wrapper > *,
+  .no-print-wrapper > * > * {
+    padding: 0 !important;
+    margin: 0 auto !important;
+    display: block !important;
+    overflow: visible !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+
+  /* Reset layout containers */
   main,
   .min-h-screen,
   .max-w-6xl,
@@ -167,37 +244,25 @@
     display: block !important;
   }
 
-  /* Reset the bill preview wrapper containers */
-  .bill-canvas-wrapper,
-  .bill-canvas-wrapper > *,
-  [class*="overflow-x-auto"],
-  [class*="w-fit"] {
-    width: 100% !important;
-    max-width: 100% !important;
-    overflow: visible !important;
-    padding: 0 !important;
-    margin: 0 !important;
-    display: block !important;
-    background: transparent !important;
-    border: none !important;
-    box-shadow: none !important;
-  }
-
-  /* The actual document — render cleanly on A4 */
+  /*
+   * THE DOCUMENT ITSELF — do NOT override padding or border.
+   * The .print-area element IS the official bill document.  Its padding,
+   * border, and geometry are the canonical source of truth and must not
+   * be altered during printing.
+   * We only ensure it fills the page width and is visible.
+   */
   .print-area {
     display: block !important;
-    width: 100% !important;
-    max-width: 100% !important;
     margin: 0 auto !important;
-    padding: 0 !important;
-    border: none !important;
+    /* Do NOT set padding: 0 — the document's own padding is intentional */
+    /* Do NOT set border: none — the bill's outer border is intentional */
     background: #ffffff !important;
     color: #000000 !important;
     page-break-inside: avoid !important;
     break-inside: avoid !important;
   }
 
-  /* Ensure all text and borders in print are black */
+  /* Ensure all text and borders inside the document print in black */
   .print-area * {
     color: #000000 !important;
     -webkit-print-color-adjust: exact !important;
@@ -208,8 +273,14 @@
     border-color: #000000 !important;
   }
 
+  /*
+   * @page: zero margins so the document's own padding is the sole
+   * authority for how much whitespace appears at the page edges.
+   * This ensures Print → Save as PDF has the same geometry as
+   * the directly-downloaded PDF.
+   */
   @page {
     size: A4 portrait;
-    margin: 10mm;
+    margin: 0;
   }
 }
