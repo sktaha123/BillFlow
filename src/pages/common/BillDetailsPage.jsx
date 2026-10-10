@@ -265,7 +265,7 @@ export const BillDetailsPage = () => {
             <div key={app.id || idx} className="flex items-start gap-3.5 p-4 rounded-xl bg-white border border-slate-200/60">
               <div className="mt-0.5">
                 {app.action === 'SUBMITTED' && <CheckCircle2 className="w-4 h-4 text-slate-800" />}
-                {app.action === 'APPROVED' && <CheckCircle2 className="w-4 h-4 text-indigo-600" />}
+                {app.action === 'APPROVED' && <CheckCircle2 className="w-4 h-4 text-emerald-600" />}
                 {app.action === 'FINALIZED' && <CheckCircle2 className="w-4 h-4 text-emerald-600" />}
                 {app.action === 'REJECTED' && <XCircle className="w-4 h-4 text-rose-600" />}
               </div>

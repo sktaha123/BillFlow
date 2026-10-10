@@ -125,7 +125,53 @@ export const HeadPendingBills = () => {
         />
       ) : (
         <div className="bg-white/90 backdrop-blur-md border border-slate-200/80 rounded-xl overflow-hidden shadow-[0_4px_20px_-4px_rgba(15,23,42,0.04)]">
-          <div className="overflow-x-auto">
+          {/* Mobile Card View */}
+          <div className="md:hidden divide-y divide-slate-100">
+            {filteredBills.map((b) => {
+              const hodApproval = b.approvals?.find((a) => a.action === 'APPROVED');
+              return (
+                <div
+                  key={b.id}
+                  className="p-4 hover:bg-slate-50/70 transition-colors space-y-3"
+                >
+                  <div className="flex items-start justify-between gap-2">
+                    <div>
+                      <span className="font-mono font-semibold text-slate-900 text-xs block">
+                        {b.bill_reference_id}
+                      </span>
+                      <p className="text-xs font-semibold text-slate-900 mt-0.5">
+                        {b.faculty?.name}
+                      </p>
+                      <p className="text-[11px] text-slate-500">
+                        {b.class?.name || 'TYCS'}, Semester {b.semester?.roman_label}
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <span className="font-mono font-bold text-slate-900 text-sm block">
+                        {formatCurrency(b.grand_total)}
+                      </span>
+                      <span className="text-[10px] text-slate-400">
+                        Endorsed: {hodApproval ? new Date(hodApproval.created_at).toLocaleDateString() : 'Yes'}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="pt-2 border-t border-slate-100 flex items-center justify-end">
+                    <button
+                      onClick={() => navigate(`/head/review/${b.id}`)}
+                      className="inline-flex items-center justify-center gap-1.5 w-full py-2.5 rounded-xl text-xs font-semibold text-white bg-slate-900 hover:bg-slate-800 shadow-2xs active:scale-[0.99] transition-all cursor-pointer"
+                    >
+                      Review &amp; Sanction
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Desktop Table View */}
+          <div className="hidden md:block overflow-x-auto">
             <table className="w-full min-w-[580px] text-xs text-left">
               <thead className="bg-slate-50/80 border-b border-slate-200/80 text-slate-500 font-semibold uppercase tracking-wider text-[10px]">
                 <tr>

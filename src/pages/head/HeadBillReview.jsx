@@ -168,8 +168,8 @@ export const HeadBillReview = () => {
           </div>
 
           <div className="text-left sm:text-right">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-800 border border-indigo-200/80">
-              <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-pulse" />
+            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-amber-50 text-amber-900 border border-amber-200/80">
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
               Pending Principal Sanction
             </span>
             <p className="text-[11px] text-slate-400 mt-1.5">
@@ -401,8 +401,8 @@ export const HeadBillReview = () => {
         </div>
       </div>
 
-      {/* Actions */}
-      <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-200/80">
+      {/* Actions — Desktop */}
+      <div className="hidden sm:flex items-center justify-end gap-3 pt-4 border-t border-slate-200/80">
         <button
           onClick={() => setIsRejectModalOpen(true)}
           className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-medium text-rose-600 bg-rose-50/60 border border-rose-200/80 hover:bg-rose-100/60 transition-all cursor-pointer"
@@ -426,6 +426,33 @@ export const HeadBillReview = () => {
           )}
         </button>
       </div>
+
+      {/* Mobile Sticky Action Bar */}
+      <div className="sm:hidden fixed bottom-0 left-0 right-0 p-3 bg-white/95 backdrop-blur-md border-t border-slate-200/90 shadow-lg z-30 flex items-center justify-between gap-3 no-print">
+        <div>
+          <span className="text-[10px] uppercase font-semibold text-slate-400 block leading-tight">Sanction Amount</span>
+          <span className="font-mono font-bold text-slate-900 text-base">{formatCurrency(bill.grand_total)}</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setIsRejectModalOpen(true)}
+            className="px-3 py-2 rounded-xl text-xs font-semibold text-rose-600 bg-rose-50 border border-rose-200 hover:bg-rose-100 transition-colors cursor-pointer"
+          >
+            Reject
+          </button>
+          <button
+            onClick={handleFinalize}
+            disabled={isProcessing}
+            className="px-4 py-2 rounded-xl text-xs font-semibold text-white bg-slate-900 hover:bg-slate-800 shadow-sm transition-colors cursor-pointer disabled:opacity-60 flex items-center gap-1.5"
+          >
+            <Award className="w-3.5 h-3.5" />
+            Sanction
+          </button>
+        </div>
+      </div>
+
+      {/* Extra bottom spacer on mobile so content isn't covered by sticky ribbon */}
+      <div className="h-16 sm:hidden" />
 
       {/* Rejection Modal */}
       <Modal
@@ -455,8 +482,8 @@ export const HeadBillReview = () => {
             </button>
             <button
               onClick={handleReject}
-              disabled={isProcessing}
-              className="px-4 py-2 rounded-xl text-xs font-semibold text-white bg-rose-600 hover:bg-rose-700 transition-all cursor-pointer disabled:opacity-60"
+              disabled={isProcessing || !rejectionReason.trim()}
+              className="px-4 py-2 rounded-xl text-xs font-semibold text-white bg-rose-600 hover:bg-rose-700 transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Confirm Rejection
             </button>

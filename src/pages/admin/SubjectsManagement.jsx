@@ -226,8 +226,8 @@ export const SubjectsManagement = () => {
       {/* Header */}
       <div className="mb-6">
         <div className="flex items-start gap-3">
-          <div className="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center shrink-0">
-            <BookOpen className="w-5 h-5 text-indigo-600" />
+          <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center shrink-0">
+            <BookOpen className="w-5 h-5 text-slate-700" />
           </div>
 
           <div>
@@ -264,9 +264,9 @@ export const SubjectsManagement = () => {
             text-sm text-slate-800
             outline-none
             transition-all
-            focus:border-indigo-500
-            focus:ring-4
-            focus:ring-indigo-500/10
+            focus:border-slate-900
+            focus:ring-2
+            focus:ring-slate-900/10
           "
         >
           <option value="">Choose a class</option>
@@ -313,7 +313,7 @@ export const SubjectsManagement = () => {
                   </p>
                 </div>
 
-                <span className="shrink-0 inline-flex items-center px-2.5 py-1 rounded-lg bg-indigo-50 border border-indigo-100 text-xs font-semibold text-indigo-700">
+                <span className="shrink-0 inline-flex items-center px-2.5 py-1 rounded-lg bg-slate-100 border border-slate-200 text-xs font-semibold text-slate-800">
                   {subjects.length}{' '}
                   {subjects.length === 1 ? 'subject' : 'subjects'}
                 </span>
@@ -322,7 +322,7 @@ export const SubjectsManagement = () => {
 
             {isLoading ? (
               <div className="p-10 flex flex-col items-center justify-center">
-                <Loader2 className="w-5 h-5 text-indigo-600 animate-spin mb-3" />
+                <Loader2 className="w-5 h-5 text-slate-600 animate-spin mb-3" />
 
                 <p className="text-sm text-slate-500">
                   Loading subjects...
@@ -380,11 +380,11 @@ export const SubjectsManagement = () => {
                               w-full
                               px-3.5 py-3
                               rounded-xl
-                              border border-indigo-400
+                              border border-slate-900
                               text-sm font-medium
                               text-slate-900
                               outline-none
-                              ring-4 ring-indigo-500/10
+                              ring-2 ring-slate-900/10
                             "
                           />
                         </div>
@@ -421,10 +421,10 @@ export const SubjectsManagement = () => {
                               inline-flex items-center justify-center gap-2
                               px-4 py-2.5
                               rounded-xl
-                              bg-indigo-600
+                              bg-slate-900
                               text-white
                               text-sm font-semibold
-                              hover:bg-indigo-700
+                              hover:bg-slate-800
                               disabled:opacity-50
                               disabled:cursor-not-allowed
                               transition-colors
@@ -467,10 +467,10 @@ export const SubjectsManagement = () => {
                               border border-slate-200
                               bg-white
                               text-xs font-semibold text-slate-700
-                              hover:border-indigo-200
-                              hover:bg-indigo-50
-                              hover:text-indigo-700
-                              active:bg-indigo-100
+                              hover:border-slate-300
+                              hover:bg-slate-50
+                              hover:text-slate-900
+                              active:bg-slate-100
                               transition-colors
                               touch-manipulation
                             "
@@ -510,18 +510,18 @@ export const SubjectsManagement = () => {
           </section>
 
           {/* Add subject */}
-          <section className="bg-indigo-50/60 border border-indigo-100 rounded-2xl p-5 sm:p-6">
+          <section className="bg-slate-50/80 border border-slate-200 rounded-2xl p-5 sm:p-6">
             <div className="flex items-start gap-3 mb-4">
-              <div className="w-9 h-9 rounded-lg bg-white border border-indigo-100 flex items-center justify-center shrink-0">
-                <PlusCircle className="w-5 h-5 text-indigo-600" />
+              <div className="w-9 h-9 rounded-lg bg-white border border-slate-200 flex items-center justify-center shrink-0">
+                <PlusCircle className="w-5 h-5 text-slate-700" />
               </div>
 
               <div>
-                <h3 className="text-sm font-bold text-indigo-950">
+                <h3 className="text-sm font-bold text-slate-900">
                   Add subject
                 </h3>
 
-                <p className="text-xs text-indigo-800/70 mt-0.5">
+                <p className="text-xs text-slate-500 mt-0.5">
                   Add a new subject to this class.
                 </p>
               </div>
@@ -550,14 +550,14 @@ export const SubjectsManagement = () => {
                     min-w-0
                     px-4 py-3
                     rounded-xl
-                    border border-indigo-200
+                    border border-slate-200
                     bg-white
                     text-sm text-slate-900
                     placeholder:text-slate-400
                     outline-none
-                    focus:border-indigo-500
-                    focus:ring-4
-                    focus:ring-indigo-500/10
+                    focus:border-slate-900
+                    focus:ring-2
+                    focus:ring-slate-900/10
                     disabled:opacity-60
                   "
                 />
@@ -572,11 +572,11 @@ export const SubjectsManagement = () => {
                     inline-flex items-center justify-center gap-2
                     px-5 py-3
                     rounded-xl
-                    bg-indigo-600
+                    bg-slate-900
                     text-white
                     text-sm font-semibold
-                    hover:bg-indigo-700
-                    active:bg-indigo-800
+                    hover:bg-slate-800
+                    active:bg-slate-950
                     disabled:opacity-50
                     disabled:cursor-not-allowed
                     transition-colors

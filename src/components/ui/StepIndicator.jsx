@@ -11,10 +11,24 @@ const STEPS = [
 ];
 
 export const StepIndicator = ({ currentStep }) => {
+  const currentStepData = STEPS.find((s) => s.id === currentStep);
+
   return (
     <div className="w-full max-w-4xl mx-auto mb-8 bg-white/85 backdrop-blur-md border border-slate-200/80 rounded-xl p-4 sm:p-5 shadow-2xs">
+
+      {/* Mobile: compact current-step label above the dots */}
+      <div className="flex sm:hidden items-center justify-between mb-3 px-1">
+        <span className="text-[11px] font-semibold text-slate-900 tracking-tight">
+          Step {currentStep} of {STEPS.length}
+        </span>
+        <span className="text-[11px] font-semibold text-slate-900">
+          {currentStepData?.name}
+        </span>
+      </div>
+
+      {/* Progress track + circles */}
       <div className="flex items-center justify-between relative">
-        
+
         {/* Background connecting bar */}
         <div className="absolute left-6 right-6 top-4 -translate-y-1/2 h-[1.5px] bg-slate-100 z-0" />
 
@@ -34,11 +48,12 @@ export const StepIndicator = ({ currentStep }) => {
                     ? 'bg-slate-900 text-white shadow-sm ring-4 ring-slate-100 scale-105'
                     : 'bg-white border border-slate-200 text-slate-400'
                 )}
+                aria-label={`Step ${step.id}: ${step.name}${isCompleted ? ' (completed)' : isCurrent ? ' (current)' : ''}`}
               >
                 {isCompleted ? <Check className="w-4 h-4 stroke-[2.5]" /> : step.id}
               </div>
 
-              {/* Step label text */}
+              {/* Step label — hidden on mobile, shown on sm+ */}
               <span
                 className={clsx(
                   'text-[11px] mt-2 font-medium tracking-tight text-center hidden sm:block transition-colors',

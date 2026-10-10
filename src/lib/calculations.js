@@ -154,3 +154,50 @@ export function formatCurrency(amount) {
     maximumFractionDigits: 0,
   }).format(amount || 0);
 }
+
+// ─── FACULTY NAME FORMATTER ───────────────────────────────────────────────────
+
+/**
+ * Formats a faculty member's name to include only their first name
+ * and the first 2-3 letters of their second name / surname.
+ * Strips salutations/prefixes (Prof., Dr., Mr., Mrs., Ms., Smt., Shri., etc.).
+ *
+ * e.g., "Prof. Hemangi Adhiraj" -> "Hemangi Adh"
+ *       "Prof. Vinod Rajput"    -> "Vinod Raj"
+ *       "Prof. Esmita Gupta"    -> "Esmita Gup"
+ *
+ * @param {string} fullName
+ * @returns {string}
+ */
+export function formatFacultyShortName(fullName) {
+  if (!fullName || typeof fullName !== 'string') return '';
+
+  // Strip academic / courtesy titles
+  let cleaned = fullName.trim();
+  cleaned = cleaned.replace(/^(prof\.|prof|dr\.|dr|mr\.|mr|mrs\.|mrs|ms\.|ms|smt\.|smt|shri\.|shri|er\.|er)\s+/i, '').trim();
+  cleaned = cleaned.replace(/^(prof\.|prof|dr\.|dr|mr\.|mr|mrs\.|mrs|ms\.|ms|smt\.|smt|shri\.|shri|er\.|er)\s+/i, '').trim();
+
+  const parts = cleaned.split(/\s+/).filter(Boolean);
+  if (parts.length === 0) return fullName.trim();
+  if (parts.length === 1) return parts[0];
+
+  const firstName = parts[0];
+
+  // Pick second name (skipping single initials if present, e.g. "Hemangi K. Adhiraj")
+  let secondName = parts[1];
+  if (parts.length > 2 && (parts[1].length <= 2 || parts[1].endsWith('.'))) {
+    secondName = parts[2] || parts[1];
+  }
+
+  // Extract first 3 letters of second name
+  const lettersOnly = secondName.replace(/[^a-zA-Z]/g, '');
+  const shortSecond = lettersOnly.slice(0, 3);
+
+  if (!shortSecond) {
+    return firstName;
+  }
+
+  const capitalizedSecond = shortSecond.charAt(0).toUpperCase() + shortSecond.slice(1).toLowerCase();
+  return `${firstName} ${capitalizedSecond}`;
+}
+

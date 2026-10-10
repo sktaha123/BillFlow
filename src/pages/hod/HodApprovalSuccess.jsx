@@ -64,7 +64,7 @@ export const HodApprovalSuccess = () => {
 
         <div className="flex justify-between items-center pt-3 border-t border-slate-100">
           <span className="text-slate-500">Status</span>
-          <span className="inline-block px-3 py-1 rounded-full text-[10px] font-semibold uppercase tracking-wider bg-indigo-50 text-indigo-800 border border-indigo-200/80">
+          <span className="inline-block px-3 py-1 rounded-full text-[10px] font-semibold uppercase tracking-wider bg-amber-50 text-amber-900 border border-amber-300/80">
             Pending Principal Sanction
           </span>
         </div>

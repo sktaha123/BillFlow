@@ -520,7 +520,7 @@ export const AdminDashboard = () => {
               'px-5 py-2.5 rounded-lg text-sm font-semibold',
               'transition-all',
               activeTab === 'FACULTY'
-                ? 'bg-indigo-600 text-white shadow-sm'
+                ? 'bg-slate-900 text-white shadow-sm'
                 : 'text-slate-600 hover:bg-slate-50'
             )}
           >
@@ -536,7 +536,7 @@ export const AdminDashboard = () => {
               'px-5 py-2.5 rounded-lg text-sm font-semibold',
               'transition-all',
               activeTab === 'SUBJECTS'
-                ? 'bg-indigo-600 text-white shadow-sm'
+                ? 'bg-slate-900 text-white shadow-sm'
                 : 'text-slate-600 hover:bg-slate-50'
             )}
           >
@@ -558,8 +558,8 @@ export const AdminDashboard = () => {
           <section className="bg-white border border-slate-200 rounded-2xl shadow-sm p-5 sm:p-6">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <div className="flex items-start gap-3">
-                <div className="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center shrink-0">
-                  <Users className="w-5 h-5 text-indigo-600" />
+                <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center shrink-0">
+                  <Users className="w-5 h-5 text-slate-700" />
                 </div>
 
                 <div>
@@ -582,11 +582,11 @@ export const AdminDashboard = () => {
                   inline-flex items-center justify-center gap-2
                   px-4 py-3
                   rounded-xl
-                  bg-indigo-600
+                  bg-slate-900
                   text-white
                   text-sm font-semibold
-                  hover:bg-indigo-700
-                  active:bg-indigo-800
+                  hover:bg-slate-800
+                  active:bg-slate-950
                   shadow-sm
                   transition-colors
                   touch-manipulation
@@ -619,9 +619,9 @@ export const AdminDashboard = () => {
                 placeholder:text-slate-400
                 outline-none
                 shadow-sm
-                focus:border-indigo-400
-                focus:ring-4
-                focus:ring-indigo-500/10
+                focus:border-slate-900
+                focus:ring-2
+                focus:ring-slate-900/10
               "
             />
           </div>
@@ -640,7 +640,7 @@ export const AdminDashboard = () => {
                 <button
                   type="button"
                   onClick={() => setSearchTerm('')}
-                  className="text-xs font-semibold text-indigo-600 hover:text-indigo-700"
+                  className="text-xs font-semibold text-slate-700 hover:text-slate-900 underline"
                 >
                   Clear search
                 </button>
@@ -654,7 +654,7 @@ export const AdminDashboard = () => {
 
           {isLoading ? (
             <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-12 text-center">
-              <Loader2 className="w-6 h-6 text-indigo-600 animate-spin mx-auto mb-3" />
+              <Loader2 className="w-6 h-6 text-slate-600 animate-spin mx-auto mb-3" />
 
               <p className="text-sm text-slate-500">
                 Loading faculty directory...
@@ -830,9 +830,9 @@ export const AdminDashboard = () => {
                                           rounded-lg 
                                           border border-slate-200
                                           text-xs font-semibold text-slate-700
-                                          hover:bg-indigo-50
-                                          hover:border-indigo-200
-                                          hover:text-indigo-700
+                                          hover:bg-slate-50
+                                          hover:border-slate-300
+                                          hover:text-slate-900
                                           transition-colors
                                         "
                                       >
@@ -969,8 +969,8 @@ export const AdminDashboard = () => {
                         className="w-full text-left p-4 sm:p-5 touch-manipulation"
                       >
                         <div className="flex items-start gap-3">
-                          <div className="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center shrink-0">
-                            <GraduationCap className="w-5 h-5 text-indigo-600" />
+                          <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center shrink-0">
+                            <GraduationCap className="w-5 h-5 text-slate-700" />
                           </div>
 
                           <div className="min-w-0 flex-1">
@@ -1112,8 +1112,8 @@ export const AdminDashboard = () => {
                 {/* Account details */}
                 <section>
                   <div className="flex items-center gap-2 mb-4">
-                    <div className="w-7 h-7 rounded-lg bg-indigo-50 flex items-center justify-center">
-                      <Users className="w-4 h-4 text-indigo-600" />
+                    <div className="w-7 h-7 rounded-lg bg-slate-100 flex items-center justify-center">
+                      <Users className="w-4 h-4 text-slate-700" />
                     </div>
 
                     <h3 className="text-sm font-bold text-slate-900">
@@ -1156,9 +1156,9 @@ export const AdminDashboard = () => {
                           bg-white
                           text-sm
                           outline-none
-                          focus:border-indigo-500
-                          focus:ring-4
-                          focus:ring-indigo-500/10
+                          focus:border-slate-900
+                          focus:ring-2
+                          focus:ring-slate-900/10
                         "
                       >
                         <option value="FACULTY">
@@ -1211,9 +1211,9 @@ export const AdminDashboard = () => {
                             border border-slate-200
                             text-sm
                             outline-none
-                            focus:border-indigo-500
-                            focus:ring-4
-                            focus:ring-indigo-500/10
+                            focus:border-slate-900
+                            focus:ring-2
+                            focus:ring-slate-900/10
                           "
                         />
                       </div>
@@ -1224,8 +1224,8 @@ export const AdminDashboard = () => {
                 {/* Assignment */}
                 <section className="border-t border-slate-100 pt-6">
                   <div className="flex items-start gap-3 mb-4">
-                    <div className="w-7 h-7 rounded-lg bg-indigo-50 flex items-center justify-center shrink-0">
-                      <BookOpen className="w-4 h-4 text-indigo-600" />
+                    <div className="w-7 h-7 rounded-lg bg-slate-100 flex items-center justify-center shrink-0">
+                      <BookOpen className="w-4 h-4 text-slate-700" />
                     </div>
 
                     <div>
@@ -1262,9 +1262,9 @@ export const AdminDashboard = () => {
                           bg-white
                           text-sm
                           outline-none
-                          focus:border-indigo-500
-                          focus:ring-4
-                          focus:ring-indigo-500/10
+                          focus:border-slate-900
+                          focus:ring-2
+                          focus:ring-slate-900/10
                         "
                       >
                         <option value="">
@@ -1289,7 +1289,7 @@ export const AdminDashboard = () => {
                             Subjects
                           </span>
 
-                          <span className="text-xs font-semibold text-indigo-600">
+                          <span className="text-xs font-semibold text-slate-900">
                             {selectedSubjects.length} selected
                           </span>
                         </div>
@@ -1333,8 +1333,8 @@ export const AdminDashboard = () => {
                                       w-5 h-5
                                       rounded-md
                                       border-slate-300
-                                      text-indigo-600
-                                      focus:ring-indigo-500
+                                      text-slate-900
+                                      focus:ring-slate-900
                                     "
                                   />
 
@@ -1379,10 +1379,10 @@ export const AdminDashboard = () => {
                     inline-flex items-center justify-center gap-2
                     px-5 py-3
                     rounded-xl
-                    bg-indigo-600
+                    bg-slate-900
                     text-white
                     text-sm font-semibold
-                    hover:bg-indigo-700
+                    hover:bg-slate-800
                     disabled:opacity-50
                   "
                 >
@@ -1507,9 +1507,9 @@ export const AdminDashboard = () => {
                       bg-white
                       text-sm
                       outline-none
-                      focus:border-indigo-500
-                      focus:ring-4
-                      focus:ring-indigo-500/10
+                      focus:border-slate-900
+                      focus:ring-2
+                      focus:ring-slate-900/10
                     "
                   >
                     <option value="">
@@ -1541,7 +1541,7 @@ export const AdminDashboard = () => {
                       </p>
                     </div>
 
-                    <span className="shrink-0 text-xs font-semibold text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-lg">
+                    <span className="shrink-0 text-xs font-semibold text-slate-800 bg-slate-100 px-2.5 py-1 rounded-lg">
                       {selectedEditSubjects.length} selected
                     </span>
                   </div>
@@ -1592,8 +1592,8 @@ export const AdminDashboard = () => {
                                 w-5 h-5
                                 rounded-md
                                 border-slate-300
-                                text-indigo-600
-                                focus:ring-indigo-500
+                                text-slate-900
+                                focus:ring-slate-900
                               "
                             />
 
@@ -1616,11 +1616,11 @@ export const AdminDashboard = () => {
 
                 {/* Current selections */}
                 {selectedEditSubjects.length > 0 && (
-                  <div className="p-4 rounded-xl bg-indigo-50 border border-indigo-100">
+                  <div className="p-4 rounded-xl bg-slate-50 border border-slate-200">
                     <div className="flex items-center gap-2 mb-3">
-                      <CheckCircle className="w-4 h-4 text-indigo-600" />
+                      <CheckCircle className="w-4 h-4 text-slate-700" />
 
-                      <p className="text-xs font-bold text-indigo-900">
+                      <p className="text-xs font-bold text-slate-900">
                         {selectedEditSubjects.length} subject
                         {selectedEditSubjects.length !== 1
                           ? 's'
@@ -1657,7 +1657,7 @@ export const AdminDashboard = () => {
                               px-2.5 py-1.5
                               rounded-lg
                               bg-white
-                              border border-indigo-200
+                              border border-slate-200
                               text-xs font-medium text-slate-700
                             "
                           >
@@ -1697,10 +1697,10 @@ export const AdminDashboard = () => {
                     inline-flex items-center justify-center gap-2
                     px-5 py-3
                     rounded-xl
-                    bg-indigo-600
+                    bg-slate-900
                     text-white
                     text-sm font-semibold
-                    hover:bg-indigo-700
+                    hover:bg-slate-800
                     disabled:opacity-50
                   "
                 >
@@ -1962,7 +1962,7 @@ const FacultyDetails = ({
                   className="p-4 rounded-xl bg-white border border-slate-200"
                 >
                   <div className="flex items-center justify-between gap-2 mb-3">
-                    <span className="text-xs font-bold text-indigo-700 uppercase tracking-wide">
+                    <span className="text-xs font-bold text-slate-800 uppercase tracking-wide">
                       {className}
                     </span>
 
@@ -1977,7 +1977,7 @@ const FacultyDetails = ({
                         key={subject.id}
                         className="flex items-start gap-2"
                       >
-                        <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 mt-1.5 shrink-0" />
+                        <span className="w-1.5 h-1.5 rounded-full bg-slate-400 mt-1.5 shrink-0" />
 
                         <span className="text-xs text-slate-600 leading-relaxed">
                           {subject.name}
@@ -2003,12 +2003,12 @@ const FacultyDetails = ({
                 inline-flex items-center justify-center gap-2
                 px-4 py-3
                 rounded-xl
-                bg-indigo-600
+                bg-slate-900
                 text-white
                  md:hidden
                 text-sm font-semibold
-                hover:bg-indigo-700
-                active:bg-indigo-800
+                hover:bg-slate-800
+                active:bg-slate-950
                 transition-colors
               "
             >
@@ -2106,9 +2106,9 @@ const Field = ({
           'text-sm text-slate-900',
           'placeholder:text-slate-400',
           'outline-none',
-          'focus:border-indigo-500',
-          'focus:ring-4',
-          'focus:ring-indigo-500/10',
+          'focus:border-slate-900',
+          'focus:ring-2',
+          'focus:ring-slate-900/10',
           mono && 'font-mono'
         )}
       />

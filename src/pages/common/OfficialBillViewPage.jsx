@@ -81,7 +81,7 @@ export const OfficialBillViewPage = () => {
         <div>
           <h2 className="text-base font-semibold text-slate-900">Official Bill Document</h2>
           <p className="text-xs text-slate-500">
-            Reference: <strong className="font-mono text-indigo-800">{bill.bill_reference_id}</strong>
+            Reference: <strong className="font-mono text-slate-900">{bill.bill_reference_id}</strong>
           </p>
         </div>
 

@@ -285,14 +285,30 @@
     width: 210mm !important;
     min-width: 210mm !important;
     max-width: 210mm !important;
-    /* Do NOT fix height — let content determine it */
     min-height: 0 !important;
     background: #ffffff !important;
     color: #000000 !important;
-    /* Prevent browser from splitting the bill across pages */
+    overflow: visible !important;
+  }
+
+  .official-bill-page {
+    display: block !important;
+    margin: 0 auto !important;
+    width: 210mm !important;
+    min-width: 210mm !important;
+    max-width: 210mm !important;
+    min-height: 0 !important;
+    background: #ffffff !important;
+    color: #000000 !important;
     page-break-inside: avoid !important;
     break-inside: avoid !important;
     overflow: visible !important;
+    box-sizing: border-box !important;
+  }
+
+  .official-bill-page.has-next-page {
+    page-break-after: always !important;
+    break-after: page !important;
   }
 
   /* Ensure all text and borders inside the document print in black */

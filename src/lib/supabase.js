@@ -1,5 +1,11 @@
 import { createClient } from '@supabase/supabase-js';
-import { DEFAULT_RATES, calculateBillCategoryTotals, calculateGenericGrandTotal } from './calculations';
+import {
+  DEFAULT_RATES,
+  calculateBillCategoryTotals,
+  calculateGenericGrandTotal,
+  formatFacultyShortName,
+} from './calculations';
+export { formatFacultyShortName };
 
 // Initialize Supabase Client if env variables are available (supports Vite & Vercel Supabase integration)
 const supabaseUrl =
@@ -915,6 +921,90 @@ class DataService {
       return true;
     }
     return false;
+  }
+
+  // ============================================================
+  // CLASS-WISE REPORT (HEAD ONLY)
+  // ============================================================
+
+  /**
+   * Fetches all FINALIZED bills for a given class + billing method,
+   * then flattens their line items into a single array — each item
+   * gets a `faculty_name` field injected so the class-wise document
+   * can display "Faculty Member" in the formerly-"Class" column.
+   *
+   * @param {string} classId       - The class UUID to filter by.
+   * @param {string} billingMethod - One of PAPER_SETTING | ANSWER_BOOK_ASSESSMENT |
+   *                                 PRACTICAL_ASSESSMENT | ONLINE_EXAMINATION_NEP
+   * @returns {{ bills: object[], aggregatedItems: object[], classInfo: object|null, grandTotal: number }}
+   */
+  async getClassWiseFinalizedBills(classId, billingMethod) {
+    let bills = [];
+
+    if (isSupabaseConfigured && supabase) {
+      let { data, error } = await supabase
+        .from('bills')
+        .select(BILL_SELECT)
+        .eq('class_id', classId)
+        .eq('billing_method', billingMethod)
+        .eq('status', 'FINALIZED')
+        .order('created_at', { ascending: true });
+
+      if (error) {
+        // Fallback to basic select
+        const fallback = await supabase
+          .from('bills')
+          .select(BILL_SELECT_BASIC)
+          .eq('class_id', classId)
+          .eq('billing_method', billingMethod)
+          .eq('status', 'FINALIZED')
+          .order('created_at', { ascending: true });
+        if (!fallback.error && fallback.data) data = fallback.data;
+      }
+      bills = data || [];
+    } else {
+      // LocalStorage fallback
+      const allBills = this.getStore(STORAGE_KEYS.BILLS, []);
+      bills = allBills.filter(
+        (b) => b.class_id === classId && b.billing_method === billingMethod && b.status === 'FINALIZED'
+      );
+    }
+
+    // Determine the correct item array key per billing method
+    const itemKey = {
+      PAPER_SETTING:           'items',
+      ANSWER_BOOK_ASSESSMENT:  'answer_book_items',
+      PRACTICAL_ASSESSMENT:    'practical_items',
+      ONLINE_EXAMINATION_NEP:  'online_items',
+    }[billingMethod] || 'items';
+
+    // Flatten all items from all confirmed teacher bills into one array,
+    // injecting `faculty_name` and `faculty_id` into each item.
+    const aggregatedItems = [];
+    let grandTotal = 0;
+
+    for (const bill of bills) {
+      const rawItems = (bill[itemKey] && bill[itemKey].length > 0)
+        ? bill[itemKey]
+        : (bill.items || []);
+
+      const rawFacultyName = bill.faculty?.name || bill.faculty?.full_name || '';
+      const facultyName    = formatFacultyShortName(rawFacultyName) || rawFacultyName;
+      const facultyId      = bill.faculty?.id   || bill.faculty_id || '';
+
+      for (const item of rawItems) {
+        aggregatedItems.push({
+          ...item,
+          faculty_name: facultyName,
+          faculty_id:   facultyId,
+        });
+        grandTotal += Number(item?.subtotal) || 0;
+      }
+    }
+
+    const classInfo = bills[0]?.class || null;
+
+    return { bills, aggregatedItems, classInfo, grandTotal };
   }
 
 }

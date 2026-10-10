@@ -17,6 +17,7 @@ import { HeadHome } from '@/pages/head/HeadHome';
 import { HeadPendingBills } from '@/pages/head/HeadPendingBills';
 import { HeadBillReview } from '@/pages/head/HeadBillReview';
 import { HeadApprovalSuccess } from '@/pages/head/HeadApprovalSuccess';
+import { HeadClassWiseReports } from '@/pages/head/HeadClassWiseReports';
 import { BillsListPage } from '@/pages/common/BillsListPage';
 import { BillDetailsPage } from '@/pages/common/BillDetailsPage';
 import { OfficialBillViewPage } from '@/pages/common/OfficialBillViewPage';
@@ -185,6 +186,14 @@ const AppRoutes = () => {
         element={
           <ProtectedRoute allowedRoles={['HEAD']}>
             <HeadApprovalSuccess />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/head/class-wise-reports"
+        element={
+          <ProtectedRoute allowedRoles={['HEAD']}>
+            <HeadClassWiseReports />
           </ProtectedRoute>
         }
       />

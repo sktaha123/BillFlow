@@ -12,20 +12,20 @@ export const Button = ({
   disabled,
   ...props
 }) => {
-  const baseStyles = 'inline-flex items-center justify-center font-medium transition-all duration-150 rounded-md focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-1 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer';
+  const baseStyles = 'inline-flex items-center justify-center font-medium transition-all duration-150 rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-900 focus-visible:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer';
 
   const sizeStyles = {
     sm: 'text-xs px-3 py-1.5 gap-1.5',
-    md: 'text-sm px-4 py-2 gap-2',
-    lg: 'text-base px-6 py-2.5 gap-2.5',
+    md: 'text-sm px-4 py-2.5 gap-2',
+    lg: 'text-base px-6 py-3 gap-2.5',
   };
 
   const variantStyles = {
-    primary: 'bg-black text-white hover:bg-neutral-800 active:bg-neutral-900 border border-black',
-    secondary: 'bg-neutral-100 text-black hover:bg-neutral-200 border border-neutral-200',
-    outline: 'bg-white text-black hover:bg-neutral-50 border border-neutral-300 hover:border-neutral-400',
-    danger: 'bg-red-600 text-white hover:bg-red-700 border border-red-600',
-    ghost: 'bg-transparent text-neutral-600 hover:text-black hover:bg-neutral-100 border border-transparent',
+    primary: 'bg-slate-900 text-white hover:bg-slate-800 active:bg-slate-950 border border-slate-900 shadow-2xs hover:shadow-xs',
+    secondary: 'bg-slate-100 text-slate-800 hover:bg-slate-200 border border-slate-200',
+    outline: 'bg-white text-slate-900 hover:bg-slate-50 border border-slate-300 hover:border-slate-400',
+    danger: 'bg-rose-600 text-white hover:bg-rose-700 border border-rose-600',
+    ghost: 'bg-transparent text-slate-600 hover:text-slate-900 hover:bg-slate-100 border border-transparent',
   };
 
   return (

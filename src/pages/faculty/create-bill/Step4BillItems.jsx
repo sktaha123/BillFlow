@@ -77,9 +77,24 @@ export const Step4BillItems = ({
                     <td className="py-3.5 px-4 text-center font-mono">{item.internal_books || 0}</td>
                     <td className="py-3.5 px-4 text-right font-mono font-semibold text-slate-900">{formatCurrency(item.subtotal)}</td>
                     <td className="py-3.5 px-4 text-center">
-                      <div className="flex items-center justify-center gap-1">
-                        <button type="button" onClick={() => onEditItem(idx)} className="p-1.5 text-slate-400 hover:text-slate-900 rounded-lg hover:bg-slate-100"><Edit3 className="w-3.5 h-3.5" /></button>
-                        <button type="button" onClick={() => onRemoveItem(idx)} disabled={draft.items.length <= 1} className="p-1.5 text-slate-400 hover:text-rose-600 disabled:opacity-20 rounded-lg hover:bg-rose-50"><Trash2 className="w-3.5 h-3.5" /></button>
+                      <div className="flex items-center justify-center gap-1.5">
+                        <button
+                          type="button"
+                          onClick={() => onEditItem(idx)}
+                          aria-label={`Edit line item ${idx + 1}`}
+                          className="min-w-[36px] min-h-[36px] flex items-center justify-center p-2 text-slate-400 hover:text-slate-900 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer"
+                        >
+                          <Edit3 className="w-4 h-4" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => onRemoveItem(idx)}
+                          disabled={draft.items.length <= 1}
+                          aria-label={`Delete line item ${idx + 1}`}
+                          className="min-w-[36px] min-h-[36px] flex items-center justify-center p-2 text-slate-400 hover:text-rose-600 disabled:opacity-20 rounded-lg hover:bg-rose-50 transition-colors cursor-pointer"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
                       </div>
                     </td>
                   </tr>
@@ -98,7 +113,7 @@ export const Step4BillItems = ({
                   <th className="py-3.5 px-4 text-center">Level</th>
                   <th className="py-3.5 px-4 text-center">Candidates</th>
                   <th className="py-3.5 px-4 text-right">Subtotal</th>
-                  <th className="py-3.5 px-4 w-20 text-center">Actions</th>
+                  <th className="py-3.5 px-4 w-24 text-center">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
@@ -111,9 +126,24 @@ export const Step4BillItems = ({
                     <td className="py-3.5 px-4 text-center font-mono font-medium">{item.practical_books || 0}</td>
                     <td className="py-3.5 px-4 text-right font-mono font-semibold text-slate-900">{formatCurrency(item.subtotal)}</td>
                     <td className="py-3.5 px-4 text-center">
-                      <div className="flex items-center justify-center gap-1">
-                        <button type="button" onClick={() => onEditItem(idx)} className="p-1.5 text-slate-400 hover:text-slate-900 rounded-lg hover:bg-slate-100"><Edit3 className="w-3.5 h-3.5" /></button>
-                        <button type="button" onClick={() => onRemoveItem(idx)} disabled={draft.items.length <= 1} className="p-1.5 text-slate-400 hover:text-rose-600 disabled:opacity-20 rounded-lg hover:bg-rose-50"><Trash2 className="w-3.5 h-3.5" /></button>
+                      <div className="flex items-center justify-center gap-1.5">
+                        <button
+                          type="button"
+                          onClick={() => onEditItem(idx)}
+                          aria-label={`Edit line item ${idx + 1}`}
+                          className="min-w-[36px] min-h-[36px] flex items-center justify-center p-2 text-slate-400 hover:text-slate-900 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer"
+                        >
+                          <Edit3 className="w-4 h-4" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => onRemoveItem(idx)}
+                          disabled={draft.items.length <= 1}
+                          aria-label={`Delete line item ${idx + 1}`}
+                          className="min-w-[36px] min-h-[36px] flex items-center justify-center p-2 text-slate-400 hover:text-rose-600 disabled:opacity-20 rounded-lg hover:bg-rose-50 transition-colors cursor-pointer"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
                       </div>
                     </td>
                   </tr>
@@ -147,9 +177,24 @@ export const Step4BillItems = ({
                     <td className="py-3.5 px-4 text-right font-mono text-slate-600">{formatCurrency(item.upload_amount || 150)}</td>
                     <td className="py-3.5 px-4 text-right font-mono font-semibold text-slate-900">{formatCurrency(item.subtotal)}</td>
                     <td className="py-3.5 px-4 text-center">
-                      <div className="flex items-center justify-center gap-1">
-                        <button type="button" onClick={() => onEditItem(idx)} className="p-1.5 text-slate-400 hover:text-slate-900 rounded-lg hover:bg-slate-100"><Edit3 className="w-3.5 h-3.5" /></button>
-                        <button type="button" onClick={() => onRemoveItem(idx)} disabled={draft.items.length <= 1} className="p-1.5 text-slate-400 hover:text-rose-600 disabled:opacity-20 rounded-lg hover:bg-rose-50"><Trash2 className="w-3.5 h-3.5" /></button>
+                      <div className="flex items-center justify-center gap-1.5">
+                        <button
+                          type="button"
+                          onClick={() => onEditItem(idx)}
+                          aria-label={`Edit line item ${idx + 1}`}
+                          className="min-w-[36px] min-h-[36px] flex items-center justify-center p-2 text-slate-400 hover:text-slate-900 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer"
+                        >
+                          <Edit3 className="w-4 h-4" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => onRemoveItem(idx)}
+                          disabled={draft.items.length <= 1}
+                          aria-label={`Delete line item ${idx + 1}`}
+                          className="min-w-[36px] min-h-[36px] flex items-center justify-center p-2 text-slate-400 hover:text-rose-600 disabled:opacity-20 rounded-lg hover:bg-rose-50 transition-colors cursor-pointer"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
                       </div>
                     </td>
                   </tr>
@@ -168,7 +213,7 @@ export const Step4BillItems = ({
                   <th className="py-3.5 px-4">Type</th>
                   <th className="py-3.5 px-4 text-center">Sets</th>
                   <th className="py-3.5 px-4 text-right">Amount</th>
-                  <th className="py-3.5 px-4 w-20 text-center">Actions</th>
+                  <th className="py-3.5 px-4 w-24 text-center">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
@@ -191,9 +236,24 @@ export const Step4BillItems = ({
                       {formatCurrency(item.subtotal)}
                     </td>
                     <td className="py-3.5 px-4 text-center">
-                      <div className="flex items-center justify-center gap-1">
-                        <button type="button" onClick={() => onEditItem(idx)} className="p-1.5 text-slate-400 hover:text-slate-900 rounded-lg hover:bg-slate-100"><Edit3 className="w-3.5 h-3.5" /></button>
-                        <button type="button" onClick={() => onRemoveItem(idx)} disabled={draft.items.length <= 1} className="p-1.5 text-slate-400 hover:text-rose-600 disabled:opacity-20 rounded-lg hover:bg-rose-50"><Trash2 className="w-3.5 h-3.5" /></button>
+                      <div className="flex items-center justify-center gap-1.5">
+                        <button
+                          type="button"
+                          onClick={() => onEditItem(idx)}
+                          aria-label={`Edit line item ${idx + 1}`}
+                          className="min-w-[36px] min-h-[36px] flex items-center justify-center p-2 text-slate-400 hover:text-slate-900 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer"
+                        >
+                          <Edit3 className="w-4 h-4" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => onRemoveItem(idx)}
+                          disabled={draft.items.length <= 1}
+                          aria-label={`Delete line item ${idx + 1}`}
+                          className="min-w-[36px] min-h-[36px] flex items-center justify-center p-2 text-slate-400 hover:text-rose-600 disabled:opacity-20 rounded-lg hover:bg-rose-50 transition-colors cursor-pointer"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
                       </div>
                     </td>
                   </tr>

@@ -168,7 +168,43 @@ export const MyBillsPage = () => {
         />
       ) : (
         <div className="bg-white/90 backdrop-blur-md border border-slate-200/80 rounded-xl overflow-hidden shadow-[0_4px_20px_-4px_rgba(15,23,42,0.04)]">
-          <div className="overflow-x-auto">
+          {/* Mobile Card View */}
+          <div className="md:hidden divide-y divide-slate-100">
+            {filteredBills.map((bill) => (
+              <div
+                key={bill.id}
+                onClick={() => navigate(`/bill/${bill.id}`)}
+                className="p-4 hover:bg-slate-50/70 active:bg-slate-100 transition-colors cursor-pointer space-y-3"
+              >
+                <div className="flex items-start justify-between gap-2">
+                  <div>
+                    <span className="font-mono font-semibold text-slate-900 text-xs block">
+                      {bill.bill_reference_id}
+                    </span>
+                    <p className="text-xs font-medium text-slate-700 mt-0.5">
+                      {bill.class?.name || 'TYCS'}, Sem {bill.semester?.roman_label}
+                    </p>
+                    <p className="text-[11px] text-slate-400">
+                      {bill.items?.length || 0} {bill.items?.length === 1 ? 'Paper' : 'Papers'} • {bill.academic_year?.year_label}
+                    </p>
+                  </div>
+                  <StatusBadge status={bill.status} />
+                </div>
+
+                <div className="flex items-center justify-between pt-2 border-t border-slate-100 text-xs">
+                  <span className="text-slate-400 text-[11px] font-mono">
+                    {bill.submission_date ? new Date(bill.submission_date).toLocaleDateString('en-IN') : 'Draft'}
+                  </span>
+                  <span className="font-mono font-bold text-slate-900 text-sm">
+                    {formatCurrency(bill.grand_total)}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Desktop Table View */}
+          <div className="hidden md:block overflow-x-auto">
             <table className="w-full min-w-[580px] text-xs text-left">
               <thead className="bg-slate-50/80 border-b border-slate-200/80 text-slate-500 font-semibold uppercase tracking-wider text-[10px]">
                 <tr>
@@ -189,7 +225,7 @@ export const MyBillsPage = () => {
                     className="hover:bg-slate-50/70 transition-colors cursor-pointer group"
                   >
                     <td className="py-3.5 px-4">
-                      <span className="font-mono font-semibold text-slate-900 block group-hover:text-indigo-600 transition-colors">
+                      <span className="font-mono font-semibold text-slate-900 block group-hover:text-slate-900 transition-colors">
                         {bill.bill_reference_id}
                       </span>
                       <span className="text-[11px] text-slate-400 block">{bill.class?.name || 'TYCS'}</span>

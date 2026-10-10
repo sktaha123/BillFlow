@@ -1,5 +1,6 @@
 import React from 'react';
 import { clsx } from 'clsx';
+import { CheckCircle2, Clock, AlertCircle, FileEdit } from 'lucide-react';
 
 export const StatusBadge = ({ status, className }) => {
   const getStatusConfig = (st) => {
@@ -7,59 +8,67 @@ export const StatusBadge = ({ status, className }) => {
       case 'DRAFT':
         return {
           label: 'Draft',
-          styles: 'bg-neutral-100 text-neutral-700 border-neutral-200',
-          dot: 'bg-neutral-400',
+          styles: 'bg-slate-100 text-slate-800 border-slate-200',
+          icon: FileEdit,
+          iconStyles: 'text-slate-600',
         };
       case 'PENDING_HOD':
         return {
           label: 'Pending HOD',
-          styles: 'bg-amber-50 text-amber-800 border-amber-200',
-          dot: 'bg-amber-500',
+          styles: 'bg-amber-50 text-amber-900 border-amber-300/80',
+          icon: Clock,
+          iconStyles: 'text-amber-700',
         };
       case 'REJECTED_BY_HOD':
         return {
           label: 'Rejected by HOD',
-          styles: 'bg-red-50 text-red-700 border-red-200',
-          dot: 'bg-red-500',
+          styles: 'bg-rose-50 text-rose-900 border-rose-300/80',
+          icon: AlertCircle,
+          iconStyles: 'text-rose-700',
         };
       case 'PENDING_HEAD':
         return {
           label: 'Pending Head',
-          styles: 'bg-blue-50 text-blue-800 border-blue-200',
-          dot: 'bg-blue-500',
+          styles: 'bg-amber-50 text-amber-900 border-amber-300/80',
+          icon: Clock,
+          iconStyles: 'text-amber-700',
         };
       case 'REJECTED_BY_HEAD':
         return {
           label: 'Rejected by Head',
-          styles: 'bg-red-50 text-red-700 border-red-200',
-          dot: 'bg-red-500',
+          styles: 'bg-rose-50 text-rose-900 border-rose-300/80',
+          icon: AlertCircle,
+          iconStyles: 'text-rose-700',
         };
       case 'FINALIZED':
         return {
           label: 'Finalized',
-          styles: 'bg-emerald-50 text-emerald-800 border-emerald-200',
-          dot: 'bg-emerald-500',
+          styles: 'bg-emerald-50 text-emerald-900 border-emerald-300/80',
+          icon: CheckCircle2,
+          iconStyles: 'text-emerald-700',
         };
       default:
         return {
           label: st || 'Unknown',
-          styles: 'bg-neutral-100 text-neutral-700 border-neutral-200',
-          dot: 'bg-neutral-400',
+          styles: 'bg-slate-100 text-slate-800 border-slate-200',
+          icon: FileEdit,
+          iconStyles: 'text-slate-600',
         };
     }
   };
 
   const config = getStatusConfig(status);
+  const Icon = config.icon;
 
   return (
     <span
       className={clsx(
-        'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-medium border',
+        'inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-semibold border tracking-wide whitespace-nowrap',
         config.styles,
         className
       )}
     >
-      
+      <Icon className={clsx('w-3 h-3 shrink-0', config.iconStyles)} />
       <span>{config.label}</span>
     </span>
   );

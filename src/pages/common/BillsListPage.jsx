@@ -109,7 +109,7 @@ export const BillsListPage = () => {
       </div>
 
       {/* Filter Bar */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-6 gap-3 p-4 rounded-xl bg-white/80 backdrop-blur-md border border-slate-200/80 shadow-2xs">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 p-4 rounded-xl bg-white/80 backdrop-blur-md border border-slate-200/80 shadow-2xs">
         <div>
           <div className="relative">
             <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-2.5" />
@@ -209,7 +209,48 @@ export const BillsListPage = () => {
         />
       ) : (
         <div className="bg-white/90 backdrop-blur-md border border-slate-200/80 rounded-xl overflow-hidden shadow-[0_4px_20px_-4px_rgba(15,23,42,0.04)]">
-          <div className="overflow-x-auto">
+          {/* Mobile Card View */}
+          <div className="md:hidden divide-y divide-slate-100">
+            {filteredBills.map((bill) => (
+              <div
+                key={bill.id}
+                onClick={() => navigate(`/bill/${bill.id}`)}
+                className="p-4 hover:bg-slate-50/70 active:bg-slate-100 transition-colors cursor-pointer space-y-3"
+              >
+                <div className="flex items-start justify-between gap-2">
+                  <div>
+                    <span className="font-mono font-semibold text-slate-900 text-xs block">
+                      {bill.bill_reference_id}
+                    </span>
+                    <p className="text-xs font-semibold text-slate-800 mt-0.5">
+                      {bill.faculty?.name}
+                    </p>
+                    <p className="text-[11px] text-slate-500">
+                      {bill.class?.name ? `${bill.class.name}, ` : ''}Sem {bill.semester?.roman_label || bill.semester?.semester_number}
+                    </p>
+                  </div>
+                  <div className="flex flex-col items-end gap-1.5">
+                    <StatusBadge status={bill.status} />
+                    <span className="text-[10px] text-slate-500 font-medium px-1.5 py-0.5 bg-slate-100 rounded">
+                      {METHOD_SHORT_LABELS[bill.billing_method] || 'Paper Setting'}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between pt-2 border-t border-slate-100 text-xs">
+                  <span className="text-slate-400 text-[11px]">
+                    {bill.academic_year?.year_label}
+                  </span>
+                  <span className="font-mono font-bold text-slate-900 text-sm">
+                    {formatCurrency(bill.grand_total)}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Desktop Table View */}
+          <div className="hidden md:block overflow-x-auto">
             <table className="w-full min-w-[640px] text-xs text-left">
               <thead className="bg-slate-50/80 border-b border-slate-200/80 text-slate-500 font-semibold uppercase tracking-wider text-[10px]">
                 <tr>
