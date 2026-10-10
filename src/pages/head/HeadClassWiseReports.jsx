@@ -122,7 +122,7 @@ export const HeadClassWiseReports = () => {
   return (
     <div className="space-y-5 max-w-4xl mx-auto animate-in fade-in duration-200">
       {/* ── Action Bar ── */}
-      <div className="no-print flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 sm:p-5 rounded-xl bg-white/90 backdrop-blur-md border border-slate-200/80 shadow-sm">
+      <div className="no-print flex flex-row items-center justify-between gap-4 p-4 sm:p-5 rounded-xl bg-white/90 backdrop-blur-md border border-slate-200/80 shadow-sm">
         <div>
           <h2 className="text-base font-semibold text-slate-900">Class-Wise Bill Report</h2>
           <p className="text-xs text-slate-500">
@@ -132,7 +132,7 @@ export const HeadClassWiseReports = () => {
 
         <button
           onClick={() => navigate('/head')}
-          className="no-print inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 shadow-sm transition-all cursor-pointer"
+          className="no-print inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 shadow-sm transition-all cursor-pointer w-fit"
         >
           <ChevronLeft className="w-4 h-4 text-slate-400" />
           Back

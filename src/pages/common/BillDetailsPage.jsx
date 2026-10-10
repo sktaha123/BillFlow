@@ -3,7 +3,7 @@ import { useParams, useNavigate, Navigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import { dataService } from '@/lib/supabase';
 import { StatusBadge } from '@/components/ui/StatusBadge';
-import { formatCurrency } from '@/lib/calculations';
+import { formatCurrency, formatSubjectWithExamMode } from '@/lib/calculations';
 import { ChevronLeft, FileText, CheckCircle2, XCircle } from 'lucide-react';
 
 const METHOD_LABELS = {
@@ -130,7 +130,7 @@ export const BillDetailsPage = () => {
                   {(bill.answer_book_items && bill.answer_book_items.length > 0 ? bill.answer_book_items : (bill.items || [])).map((item, idx) => (
                     <tr key={idx} className="hover:bg-slate-50/60 transition-colors">
                       <td className="py-3.5 px-4 text-center font-mono text-slate-400">{String(idx + 1).padStart(2, '0')}</td>
-                      <td className="py-3.5 px-4 font-semibold text-slate-900">{item.subject?.name || item.subject_name}</td>
+                      <td className="py-3.5 px-4 font-semibold text-slate-900">{formatSubjectWithExamMode(item.subject?.name || item.subject_name, item.paper_type || 'THEORY', 40)}</td>
                       <td className="py-3.5 px-4 text-center font-semibold">{item.level || item.academic_level || 'UG'}</td>
                       <td className="py-3.5 px-4 text-center font-mono">{item.semester_end_books || 0}</td>
                       <td className="py-3.5 px-4 text-center font-mono">{item.atkt_books || 0}</td>
@@ -158,7 +158,7 @@ export const BillDetailsPage = () => {
                   {(bill.practical_items && bill.practical_items.length > 0 ? bill.practical_items : (bill.items || [])).map((item, idx) => (
                     <tr key={idx} className="hover:bg-slate-50/60 transition-colors">
                       <td className="py-3.5 px-4 text-center font-mono text-slate-400">{String(idx + 1).padStart(2, '0')}</td>
-                      <td className="py-3.5 px-4 font-semibold text-slate-900">{item.subject?.name || item.subject_name}</td>
+                      <td className="py-3.5 px-4 font-semibold text-slate-900">{formatSubjectWithExamMode(item.subject?.name || item.subject_name, 'Practical', 40)}</td>
                       <td className="py-3.5 px-4 text-center font-semibold">{item.level || item.academic_level || 'UG'}</td>
                       <td className="py-3.5 px-4 text-center font-mono font-medium">{item.practical_books || 0}</td>
                       <td className="py-3.5 px-4 text-right font-mono text-slate-600">{formatCurrency(item.practical_rate || 25)}</td>
@@ -186,7 +186,7 @@ export const BillDetailsPage = () => {
                   {(bill.online_items && bill.online_items.length > 0 ? bill.online_items : (bill.items || [])).map((item, idx) => (
                     <tr key={idx} className="hover:bg-slate-50/60 transition-colors">
                       <td className="py-3.5 px-4 text-center font-mono text-slate-400">{String(idx + 1).padStart(2, '0')}</td>
-                      <td className="py-3.5 px-4 font-semibold text-slate-900">{item.subject?.name || item.subject_name}</td>
+                      <td className="py-3.5 px-4 font-semibold text-slate-900">{formatSubjectWithExamMode(item.subject?.name || item.subject_name, 'Online', 40)}</td>
                       <td className="py-3.5 px-4 text-center">{item.class?.name || item.class_name || bill.class?.name || '—'}</td>
                       <td className="py-3.5 px-4 text-center font-mono">{item.mcq_count || 0}</td>
                       <td className="py-3.5 px-4 text-center font-mono">{item.student_count || 0}</td>
@@ -216,7 +216,7 @@ export const BillDetailsPage = () => {
                   {bill.items?.map((item, idx) => (
                     <tr key={idx} className="hover:bg-slate-50/60 transition-colors">
                       <td className="py-3.5 px-4 text-center font-mono text-slate-400">{String(idx + 1).padStart(2, '0')}</td>
-                      <td className="py-3.5 px-4 font-semibold text-slate-900">{item.subject?.name || item.subject_name}</td>
+                      <td className="py-3.5 px-4 font-semibold text-slate-900">{formatSubjectWithExamMode(item.subject?.name || item.subject_name, item.paper_type || 'THEORY', 40)}</td>
                       <td className="py-3.5 px-4">
                         <span className="inline-block px-2.5 py-0.5 rounded-full text-[9px] font-semibold uppercase tracking-wider bg-slate-100 text-slate-700">
                           {item.paper_type}
