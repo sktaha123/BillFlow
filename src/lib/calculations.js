@@ -159,12 +159,13 @@ export function formatCurrency(amount) {
 
 /**
  * Formats a faculty member's name to include only their first name
- * and the first 2-3 letters of their second name / surname.
- * Strips salutations/prefixes (Prof., Dr., Mr., Mrs., Ms., Smt., Shri., etc.).
+ * and the first letter of their second name / surname followed by a dot.
+ * Strips salutations/prefixes (Prof., Dr., Mr., Mrs., Ms., Smt., Shri., Er., etc.).
  *
- * e.g., "Prof. Hemangi Adhiraj" -> "Hemangi Adh"
- *       "Prof. Vinod Rajput"    -> "Vinod Raj"
- *       "Prof. Esmita Gupta"    -> "Esmita Gup"
+ * e.g., "Prof. Hemangi Adhiraj" -> "Hemangi A."
+ *       "Prof. Vinod Rajput"    -> "Vinod R."
+ *       "Prof. Esmita Gupta"    -> "Esmita G."
+ *       "Taha Samad"            -> "Taha S."
  *
  * @param {string} fullName
  * @returns {string}
@@ -183,21 +184,20 @@ export function formatFacultyShortName(fullName) {
 
   const firstName = parts[0];
 
-  // Pick second name (skipping single initials if present, e.g. "Hemangi K. Adhiraj")
+  // Pick second name (skipping single initials if present in middle, e.g. "Hemangi K. Adhiraj")
   let secondName = parts[1];
   if (parts.length > 2 && (parts[1].length <= 2 || parts[1].endsWith('.'))) {
     secondName = parts[2] || parts[1];
   }
 
-  // Extract first 3 letters of second name
+  // Extract first letter of second name
   const lettersOnly = secondName.replace(/[^a-zA-Z]/g, '');
-  const shortSecond = lettersOnly.slice(0, 3);
+  const initial = lettersOnly.charAt(0).toUpperCase();
 
-  if (!shortSecond) {
+  if (!initial) {
     return firstName;
   }
 
-  const capitalizedSecond = shortSecond.charAt(0).toUpperCase() + shortSecond.slice(1).toLowerCase();
-  return `${firstName} ${capitalizedSecond}`;
+  return `${firstName} ${initial}.`;
 }
 

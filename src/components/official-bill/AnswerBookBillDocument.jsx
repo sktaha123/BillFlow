@@ -163,16 +163,16 @@ export function AnswerBookBillDocument({ bill = {}, isClassWise = false }) {
 
             <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '10px', tableLayout: 'fixed', backgroundColor: '#ffffff', color: '#000000' }}>
               <colgroup>
-                <col style={{ width: '5%' }} />
-                <col style={{ width: '9%' }} />
-                <col style={{ width: '24%' }} />
-                <col style={{ width: '7%' }} />
-                <col style={{ width: '6%' }} />
-                <col style={{ width: '7%' }} />
-                <col style={{ width: '11%' }} />
-                <col style={{ width: '9%' }} />
-                <col style={{ width: '11%' }} />
-                <col style={{ width: '11%' }} />
+                <col style={{ width: '4%' }} />
+                <col style={{ width: isClassWise ? '15%' : '9%' }} />
+                <col style={{ width: isClassWise ? '20%' : '24%' }} />
+                <col style={{ width: isClassWise ? '6%' : '7%' }} />
+                <col style={{ width: isClassWise ? '5%' : '6%' }} />
+                <col style={{ width: isClassWise ? '6%' : '7%' }} />
+                <col style={{ width: isClassWise ? '11%' : '11%' }} />
+                <col style={{ width: isClassWise ? '10%' : '9%' }} />
+                <col style={{ width: isClassWise ? '11%' : '11%' }} />
+                <col style={{ width: isClassWise ? '12%' : '11%' }} />
               </colgroup>
 
               <thead>
@@ -217,7 +217,9 @@ export function AnswerBookBillDocument({ bill = {}, isClassWise = false }) {
                   return (
                     <tr key={globalIdx} style={{ height: '20px' }}>
                       <td style={bodyCell()}>{globalIdx + 1}</td>
-                      <td style={bodyCell()}>{isDataRow ? (isClassWise ? (formatFacultyShortName(item.faculty_name) || '') : (item.class_name || bill.class?.name || 'SYCS')) : ''}</td>
+                      <td style={bodyCell({ padding: isClassWise ? '0 4px' : '0 3px', fontSize: isClassWise ? '9.5px' : '10px', textOverflow: 'ellipsis' })}>
+                        {isDataRow ? (isClassWise ? (formatFacultyShortName(item.faculty_name) || '') : (item.class_name || bill.class?.name || 'SYCS')) : ''}
+                      </td>
                       <td style={bodyCell({ textAlign: 'left', padding: '0 4px', textOverflow: 'ellipsis' })}>
                         {isDataRow ? (item.subject?.name || item.subject_name) : ''}
                       </td>

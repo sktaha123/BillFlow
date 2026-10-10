@@ -42,53 +42,7 @@ export const HeadHome = () => {
         </p>
       </div>
 
-      {/* 2. Action Card */}
-      <div className="bg-white/90 backdrop-blur-md border border-slate-200/80 rounded-xl p-6 sm:p-4 shadow-[0_4px_24px_-4px_rgba(15,23,42,0.04)] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 hover:shadow-md transition-all">
-        <div className="space-y-2 max-w-xl">
-          
-          <h2 className="text-xl sm:text-2xl font-semibold text-slate-900 tracking-tight flex items-center gap-2.5">
-            {pendingBills.length > 0 ? (
-              <>
-                <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping" />
-                <span>{pendingBills.length} {pendingBills.length === 1 ? 'bill requires' : 'bills require'} executive sanction</span>
-              </>
-            ) : (
-              'All verified bills are finalized'
-            )}
-          </h2>
-         
-        </div>
-
-        {pendingBills.length > 0 && (
-          <button
-            onClick={() => navigate('/head/pending')}
-            className="shrink-0 inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-sm font-semibold text-white bg-slate-900 hover:bg-slate-800 shadow-sm hover:shadow active:scale-[0.99] transition-all cursor-pointer w-full sm:w-auto"
-          >
-            Review Bills ({pendingBills.length})
-            <ArrowRight className="w-4 h-4" />
-          </button>
-        )}
-      </div>
-
-      {/* Class-Wise Report Banner (Minimal) */}
-      <div className="bg-white/80 border border-slate-200/80 rounded-xl p-4 sm:px-5 sm:py-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div>
-          <h3 className="text-sm font-semibold text-slate-900">Class-Wise Bill Reports</h3>
-          <p className="text-xs text-slate-500 mt-0.5">
-            Generate consolidated reports for any class — combining all confirmed teacher bills into a single document with your signature only.
-          </p>
-        </div>
-
-        <button
-          onClick={() => navigate('/head/class-wise-reports')}
-          className="shrink-0 inline-flex items-center justify-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-medium text-slate-700 bg-white hover:bg-slate-50 border border-slate-200 shadow-2xs hover:border-slate-300 transition-all cursor-pointer w-full sm:w-auto"
-        >
-          Generate Report
-          <ArrowRight className="w-3.5 h-3.5 text-slate-400" />
-        </button>
-      </div>
-
-      {/* 3. Metrics Ribbon */}
+      {/* 2. Metrics Ribbon */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         <div className="bg-white/80 backdrop-blur-sm border border-slate-200/70 rounded-xl p-4 shadow-2xs">
           <span className="text-slate-400 block text-[11px] font-medium uppercase tracking-wide">Principal / Head</span>
@@ -106,6 +60,52 @@ export const HeadHome = () => {
           <span className="text-slate-400 block text-[11px] font-medium uppercase tracking-wide">Total Sanctioned</span>
           <span className="font-semibold text-slate-900 text-sm mt-0.5 block font-mono">{finalizedBills.length} Bills</span>
         </div>
+      </div>
+
+      {/* 3. Action Card */}
+      <div className="bg-white/90 backdrop-blur-md border border-slate-200/80 rounded-xl p-6 sm:p-4 shadow-[0_4px_24px_-4px_rgba(15,23,42,0.04)] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 hover:shadow-md transition-all">
+        <div className="space-y-2 max-w-xl">
+          <h2 className="text-xl sm:text-2xl font-semibold text-slate-900 tracking-tight flex items-center gap-2.5">
+            {pendingBills.length > 0 ? (
+              <>
+                <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping" />
+                <span>{pendingBills.length} {pendingBills.length === 1 ? 'bill requires' : 'bills require'} executive sanction</span>
+              </>
+            ) : (
+              'All verified bills are finalized'
+            )}
+          </h2>
+        </div>
+
+        {pendingBills.length > 0 && (
+          <button
+            onClick={() => navigate('/head/pending')}
+            className="shrink-0 inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-sm font-semibold text-white bg-slate-900 hover:bg-slate-800 shadow-sm hover:shadow active:scale-[0.99] transition-all cursor-pointer w-full sm:w-auto"
+          >
+            Review Bills ({pendingBills.length})
+            <ArrowRight className="w-4 h-4" />
+          </button>
+        )}
+      </div>
+
+      {/* 4. Class-Wise Bill Reports Card */}
+      <div className="bg-white/90 backdrop-blur-md border border-slate-200/80 rounded-xl p-6 sm:p-5 shadow-[0_4px_24px_-4px_rgba(15,23,42,0.04)] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5 sm:gap-6 hover:shadow-md transition-all">
+        <div className="space-y-1.5 max-w-xl">
+          <h2 className="text-lg sm:text-xl font-semibold text-slate-900 tracking-tight">
+            Class-Wise Bill Reports
+          </h2>
+          <p className="text-xs sm:text-sm text-slate-500 leading-relaxed">
+            Generate consolidated reports for any class — combining all confirmed teacher bills into a single document with your signature only.
+          </p>
+        </div>
+
+        <button
+          onClick={() => navigate('/head/class-wise-reports')}
+          className="shrink-0 inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-sm font-semibold text-slate-800 bg-slate-100 hover:bg-slate-200/80 border border-slate-200/90 shadow-2xs active:scale-[0.99] transition-all cursor-pointer w-full sm:w-auto"
+        >
+          Generate Report
+          <ArrowRight className="w-4 h-4 text-slate-600" />
+        </button>
       </div>
 
       {/* 4. RECENT SANCTIONED ACTIVITY TABLE WITH TOP HEADER ROW */}

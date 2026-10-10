@@ -96,18 +96,7 @@ export const Navbar = () => {
           </div>
 
           {/* Right Controls */}
-          <div className="flex items-center gap-2">
-
-            {/* Mobile Hamburger — visible only on small screens */}
-            <button
-              aria-label="Open navigation menu"
-              aria-expanded={isDrawerOpen}
-              aria-controls="mobile-nav-drawer"
-              onClick={() => setIsDrawerOpen(true)}
-              className="md:hidden flex items-center justify-center w-9 h-9 rounded-xl border border-slate-200 bg-white text-slate-600 hover:text-slate-900 hover:border-slate-300 transition-colors cursor-pointer shadow-2xs"
-            >
-              <Menu className="w-4 h-4" />
-            </button>
+          <div className="flex items-center gap-1.5 sm:gap-2">
 
             {/* User Profile Dropdown — desktop & mobile */}
             <div className="relative">
@@ -182,6 +171,17 @@ export const Navbar = () => {
                 </>
               )}
             </div>
+
+            {/* Mobile Hamburger — visible only on small screens (on the right of profile, borderless) */}
+            <button
+              aria-label="Open navigation menu"
+              aria-expanded={isDrawerOpen}
+              aria-controls="mobile-nav-drawer"
+              onClick={() => setIsDrawerOpen(true)}
+              className="md:hidden flex items-center justify-center w-9 h-9 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors cursor-pointer"
+            >
+              <Menu className="w-5 h-5" />
+            </button>
           </div>
         </div>
       </header>

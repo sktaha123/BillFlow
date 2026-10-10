@@ -167,17 +167,17 @@ export function PracticalBillDocument({ bill = {}, isClassWise = false }) {
 
             <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '10.5px', tableLayout: 'fixed', backgroundColor: '#ffffff', color: '#000000' }}>
               <colgroup>
-                <col style={{ width: '5%' }} />
+                <col style={{ width: '4%' }} />
                 {isClassWise ? (
                   <>
-                    <col style={{ width: '17%' }} />
-                    <col style={{ width: '28%' }} />
+                    <col style={{ width: '22%' }} />
+                    <col style={{ width: '25%' }} />
                   </>
                 ) : (
-                  <col style={{ width: '42%' }} />
+                  <col style={{ width: '47%' }} />
                 )}
                 <col style={{ width: '16%' }} />
-                <col style={{ width: '17%' }} />
+                <col style={{ width: '16%' }} />
                 <col style={{ width: '17%' }} />
               </colgroup>
 
@@ -212,7 +212,7 @@ export function PracticalBillDocument({ bill = {}, isClassWise = false }) {
                     <tr key={globalIdx} style={{ height: '22px' }}>
                       <td style={bodyCell()}>{globalIdx + 1}</td>
                       {isClassWise && (
-                        <td style={bodyCell({ textAlign: 'left', padding: '0 8px', textOverflow: 'ellipsis' })}>
+                        <td style={bodyCell({ textAlign: 'left', padding: '0 6px', fontSize: '10px', textOverflow: 'ellipsis' })}>
                           {isDataRow ? (formatFacultyShortName(item.faculty_name) || '') : ''}
                         </td>
                       )}
