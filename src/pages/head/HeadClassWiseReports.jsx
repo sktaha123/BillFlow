@@ -82,8 +82,10 @@ export const HeadClassWiseReports = () => {
     try {
       setIsDownloading(true);
       const className = (reportData.classInfo?.name || 'Class').replace(/\s+/g, '');
-      const methodLabel = BILLING_METHODS.find((m) => m.value === selectedMethod)?.label || selectedMethod;
-      const fileName = `ClassWise_${className}_${methodLabel.replace(/\s+/g, '')}.pdf`;
+      const now = new Date();
+      const day = now.getDate();
+      const monthName = now.toLocaleString('en-US', { month: 'long' });
+      const fileName = `${className}_Billing_${day}-${monthName}.pdf`;
       await downloadOfficialBillPdf(docRef.current, fileName);
     } catch (e) {
       console.error('PDF export failed', e);
