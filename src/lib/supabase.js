@@ -4,8 +4,9 @@ import {
   calculateBillCategoryTotals,
   calculateGenericGrandTotal,
   formatFacultyShortName,
+  formatSubjectWithExamMode,
 } from './calculations';
-export { formatFacultyShortName };
+export { formatFacultyShortName, formatSubjectWithExamMode };
 
 // Initialize Supabase Client if env variables are available (supports Vite & Vercel Supabase integration)
 const supabaseUrl =

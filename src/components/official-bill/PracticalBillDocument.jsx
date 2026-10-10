@@ -1,6 +1,6 @@
 import React from 'react';
 import { convertAmountToWords } from '@/lib/numberToWords';
-import { formatFacultyShortName } from '@/lib/calculations';
+import { formatFacultyShortName, formatSubjectWithExamMode } from '@/lib/calculations';
 
 const TOTAL_ROWS = 20;
 const BORDER = '1px solid #000000';
@@ -216,8 +216,8 @@ export function PracticalBillDocument({ bill = {}, isClassWise = false }) {
                           {isDataRow ? (formatFacultyShortName(item.faculty_name) || '') : ''}
                         </td>
                       )}
-                      <td style={bodyCell({ textAlign: 'left', padding: '0 8px', textOverflow: 'ellipsis' })}>
-                        {isDataRow ? (item.subject?.name || item.subject_name) : ''}
+                      <td style={bodyCell({ textAlign: 'left', padding: '0 8px', textOverflow: 'ellipsis', whiteSpace: 'nowrap' })}>
+                        {isDataRow ? formatSubjectWithExamMode(item.subject?.name || item.subject_name, 'Practical', isClassWise ? 16 : 24) : ''}
                       </td>
                       <td style={bodyCell()}>{isDataRow ? (candidates > 0 ? candidates : '—') : ''}</td>
                       <td style={bodyCell({ fontSize: '10px' })}>{isDataRow ? formula : ''}</td>

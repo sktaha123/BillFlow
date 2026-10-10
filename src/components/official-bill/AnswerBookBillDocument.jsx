@@ -1,6 +1,6 @@
 import React from 'react';
 import { convertAmountToWords } from '@/lib/numberToWords';
-import { formatFacultyShortName } from '@/lib/calculations';
+import { formatFacultyShortName, formatSubjectWithExamMode } from '@/lib/calculations';
 
 const TOTAL_ROWS = 25;
 const BORDER = '1px solid #000000';
@@ -220,8 +220,8 @@ export function AnswerBookBillDocument({ bill = {}, isClassWise = false }) {
                       <td style={bodyCell({ padding: isClassWise ? '0 4px' : '0 3px', fontSize: isClassWise ? '9.5px' : '10px', textOverflow: 'ellipsis' })}>
                         {isDataRow ? (isClassWise ? (formatFacultyShortName(item.faculty_name) || '') : (item.class_name || bill.class?.name || 'SYCS')) : ''}
                       </td>
-                      <td style={bodyCell({ textAlign: 'left', padding: '0 4px', textOverflow: 'ellipsis' })}>
-                        {isDataRow ? (item.subject?.name || item.subject_name) : ''}
+                      <td style={bodyCell({ textAlign: 'left', padding: '0 4px', textOverflow: 'ellipsis', whiteSpace: 'nowrap' })}>
+                        {isDataRow ? formatSubjectWithExamMode(item.subject?.name || item.subject_name, item.paper_type || 'THEORY', isClassWise ? 14 : 16) : ''}
                       </td>
                       <td style={bodyCell()}>{isDataRow ? (semEndQty > 0 ? semEndQty : '—') : ''}</td>
                       <td style={bodyCell()}>{isDataRow ? (atktQty > 0 ? atktQty : '—') : ''}</td>

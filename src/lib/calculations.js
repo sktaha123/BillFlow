@@ -201,3 +201,49 @@ export function formatFacultyShortName(fullName) {
   return `${firstName} ${initial}.`;
 }
 
+// ─── SUBJECT NAME WITH EXAM MODE FORMATTER ────────────────────────────────────
+
+/**
+ * Formats a subject name to always include the full examination mode in brackets
+ * as a suffix (e.g. "(Theory)", "(Practical)").
+ * Truncates long subject names with '..' from the ending if needed to preserve layout.
+ *
+ * e.g., "Blockchain Technology" + "THEORY" -> "Blockchain Tech..(Theory)"
+ *       "Blockchain Technology" + "PRACTICAL" -> "Blockchain Tech..(Practical)"
+ *
+ * @param {string} subjectName
+ * @param {string} mode - e.g. 'THEORY' | 'PRACTICAL' | 'ASSESSMENT' | 'ONLINE'
+ * @param {number} maxSubjectLength - Maximum length for subject name portion before suffix
+ * @returns {string}
+ */
+export function formatSubjectWithExamMode(subjectName, mode = 'THEORY', maxSubjectLength = 15) {
+  if (!subjectName || typeof subjectName !== 'string') return '';
+
+  // Standardize mode label (Theory, Practical, Assessment, Online)
+  let modeLabel = 'Theory';
+  const rawMode = String(mode || '').trim().toUpperCase();
+  if (rawMode === 'PRACTICAL') {
+    modeLabel = 'Practical';
+  } else if (rawMode === 'ASSESSMENT') {
+    modeLabel = 'Assessment';
+  } else if (rawMode === 'OE' || rawMode === 'ONLINE' || rawMode === 'NEP') {
+    modeLabel = 'Online';
+  } else if (rawMode === 'THEORY') {
+    modeLabel = 'Theory';
+  } else if (mode && typeof mode === 'string' && mode.trim()) {
+    const clean = mode.trim();
+    modeLabel = clean.charAt(0).toUpperCase() + clean.slice(1).toLowerCase();
+  }
+
+  // Strip existing trailing bracketed mode if present to prevent "(Theory) (Theory)"
+  let cleanSubject = subjectName.trim();
+  cleanSubject = cleanSubject.replace(/\s*\((theory|practical|assessment|online|oe|nep|sem\s*end|atkt|internal)\)\s*$/i, '').trim();
+
+  // If cleanSubject length exceeds maxSubjectLength, truncate and append '..'
+  if (cleanSubject.length > maxSubjectLength) {
+    cleanSubject = cleanSubject.slice(0, maxSubjectLength).trim() + '..';
+  }
+
+  return `${cleanSubject} (${modeLabel})`;
+}
+

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Navigate } from 'react-router-dom';
+import { useAuth } from '@/context/AuthContext';
 import { dataService } from '@/lib/supabase';
 import { StatusBadge } from '@/components/ui/StatusBadge';
 import { formatCurrency } from '@/lib/calculations';
@@ -15,6 +16,7 @@ const METHOD_LABELS = {
 export const BillDetailsPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { role } = useAuth();
   const [bill, setBill] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -38,17 +40,8 @@ export const BillDetailsPage = () => {
   }
 
   if (!bill) {
-    return (
-      <div className="py-20 text-center space-y-3">
-        <p className="text-sm font-semibold text-slate-900">Bill not found</p>
-        <button
-          onClick={() => navigate(-1)}
-          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-medium text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 cursor-pointer"
-        >
-          Go Back
-        </button>
-      </div>
-    );
+    const roleHome = role === 'ADMIN' ? '/admin' : role === 'HOD' ? '/hod' : role === 'HEAD' ? '/head' : '/faculty';
+    return <Navigate to={roleHome} replace />;
   }
 
   const method = bill.billing_method || 'PAPER_SETTING';

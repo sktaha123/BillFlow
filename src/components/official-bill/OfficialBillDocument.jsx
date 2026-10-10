@@ -1,6 +1,6 @@
 import React from 'react';
 import { convertAmountToWords } from '@/lib/numberToWords';
-import { formatFacultyShortName } from '@/lib/calculations';
+import { formatFacultyShortName, formatSubjectWithExamMode } from '@/lib/calculations';
 import { AnswerBookBillDocument } from './AnswerBookBillDocument';
 import { PracticalBillDocument } from './PracticalBillDocument';
 import { OnlineNepBillDocument } from './OnlineNepBillDocument';
@@ -125,15 +125,6 @@ export const OfficialBillDocument = React.forwardRef(({
   const headName = headApproval?.user?.name || headApproval?.user_name || 'Prof. Esmita Gupta';
   const facultyName = mergedFaculty?.full_name || mergedFaculty?.name || bill?.faculty?.full_name || bill?.faculty?.name || '';
 
-  const examModeLabel = (type) => {
-    switch (String(type || '').toUpperCase()) {
-      case 'THEORY': return 'Theory';
-      case 'PRACTICAL': return 'Practical';
-      case 'ASSESSMENT': return 'Assessment';
-      case 'OE': return 'OE';
-      default: return type || '';
-    }
-  };
 
   const headerCell = (extra = {}) => ({
     border: BORDER,
@@ -327,15 +318,8 @@ export const OfficialBillDocument = React.forwardRef(({
                       <td style={bodyCell({ padding: isClassWise ? '0 4px' : '0 3px', fontSize: isClassWise ? '10px' : '10.5px', textOverflow: 'ellipsis' })}>
                         {isDataRow ? (isClassWise ? (formatFacultyShortName(item.faculty_name) || '') : (item.class_name || classItem?.name || bill?.class?.name || 'TYCS')) : ''}
                       </td>
-                      <td style={bodyCell({ textAlign: 'center', padding: '0 4px', textOverflow: 'ellipsis' })}>
-                        {isDataRow ? (
-                          <>
-                            {item.subject?.name || item.subject_name}
-                            {item.paper_type && (
-                              <span style={{ fontSize: '9px', marginLeft: 3, opacity: 0.75 }}>({examModeLabel(item.paper_type)})</span>
-                            )}
-                          </>
-                        ) : ''}
+                      <td style={bodyCell({ textAlign: 'center', padding: '0 4px', textOverflow: 'ellipsis', whiteSpace: 'nowrap' })}>
+                        {isDataRow ? formatSubjectWithExamMode(item.subject?.name || item.subject_name, item.paper_type || 'THEORY', isClassWise ? 14 : 16) : ''}
                       </td>
                       <td style={bodyCell()}>
                         {isDataRow && Number(item.paper_sets) > 0

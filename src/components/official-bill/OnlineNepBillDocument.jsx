@@ -1,6 +1,6 @@
 import React from 'react';
 import { convertAmountToWords } from '@/lib/numberToWords';
-import { formatFacultyShortName } from '@/lib/calculations';
+import { formatFacultyShortName, formatSubjectWithExamMode } from '@/lib/calculations';
 
 const TOTAL_ROWS = 20;
 const BORDER = '1px solid #000000';
@@ -214,8 +214,8 @@ export function OnlineNepBillDocument({ bill = {}, isClassWise = false }) {
                       <td style={bodyCell({ padding: isClassWise ? '0 4px' : '0 3px', fontSize: isClassWise ? '9px' : '9.5px', textOverflow: 'ellipsis' })}>
                         {isDataRow ? (isClassWise ? (formatFacultyShortName(item.faculty_name) || '') : (item.class_name || item.class?.name || bill.class?.name || 'FYCS')) : ''}
                       </td>
-                      <td style={bodyCell({ textAlign: 'left', padding: '0 4px', textOverflow: 'ellipsis' })}>
-                        {isDataRow ? (item.subject?.name || item.subject_name) : ''}
+                      <td style={bodyCell({ textAlign: 'left', padding: '0 4px', textOverflow: 'ellipsis', whiteSpace: 'nowrap' })}>
+                        {isDataRow ? formatSubjectWithExamMode(item.subject?.name || item.subject_name, 'Online', isClassWise ? 14 : 16) : ''}
                       </td>
                       <td style={bodyCell()}>{isDataRow ? (mcqCount > 0 ? mcqCount : '—') : ''}</td>
                       <td style={bodyCell()}>{isDataRow ? (studentCount > 0 ? studentCount : '—') : ''}</td>

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Navigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import { dataService } from '@/lib/supabase';
 import { Modal } from '@/components/ui/Modal';
@@ -59,17 +59,7 @@ export const HeadBillReview = () => {
   }
 
   if (!bill) {
-    return (
-      <div className="py-20 text-center space-y-3">
-        <p className="text-sm font-semibold text-slate-900">Bill not found</p>
-        <button
-          onClick={() => navigate('/head/pending')}
-          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-medium text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 cursor-pointer"
-        >
-          Back to Pending Sanctions
-        </button>
-      </div>
-    );
+    return <Navigate to="/head" replace />;
   }
 
   const method = bill.billing_method || 'PAPER_SETTING';
